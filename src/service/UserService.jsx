@@ -65,11 +65,12 @@ export default class UserService {
     return res.data;
   }
 
-  static logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    window.location.href = '/login';
-  }
+  // En src/service/UserService.js
+static logout() {
+    localStorage.clear(); 
+    sessionStorage.clear(); 
+    window.location.replace('/login'); 
+}
 
   // --- Helpers de Estado ---
   static getToken() { return storage.token; }
