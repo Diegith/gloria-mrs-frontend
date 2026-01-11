@@ -2,16 +2,11 @@ import { useEffect, useRef } from 'react';
 import UserService from '../service/UserService';
 
 const AutoLogout = () => {
-  const INACTIVITY_TIME = 10000; // 10 segundos para la prueba rápida
+  const INACTIVITY_TIME = 150000; // 10 segundos para la prueba rápida
   const timerRef = useRef(null);
 
-  console.log("DEBUG: El archivo AutoLogout.js ha sido cargado");
-
   useEffect(() => {
-    console.log("DEBUG: useEffect de AutoLogout se ha ejecutado");
-
     const handleLogout = () => {
-      console.log("ALERTA: Ejecutando UserService.logout() AHORA");
       UserService.logout();
     };
 
