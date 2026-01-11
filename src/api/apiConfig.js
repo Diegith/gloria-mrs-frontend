@@ -2,8 +2,8 @@ import axios from 'axios';
 
 // Creamos la instancia centralizada
 const api = axios.create({
-  baseURL: 'http://localhost:8080', // La URL donde corre tu Spring Boot
-  //baseURL: 'https://mursionassistantunab-api.onrender.com', // La URL donde corre tu Spring Boot
+  //baseURL: 'http://localhost:8080', // La URL donde corre tu Spring Boot
+  baseURL: 'https://mursionassistantunab-api.onrender.com', // La URL donde corre tu Spring Boot
   headers: {
     'Content-Type': 'application/json',
   },
