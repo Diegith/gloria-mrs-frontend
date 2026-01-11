@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-glass-white: rgba(255, 255, 255, 0.4);
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --color-brand-indigo: #6366f1;
+  --color-brand-dark: #1e1b4b;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  /* Fondo degradado moderno */
+  background: linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%);
+  font-family: 'Inter', sans-serif;
+}
