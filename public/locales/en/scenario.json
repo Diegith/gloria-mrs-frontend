@@ -1,0 +1,17 @@
+{
+  "title": "Scenario Repository",
+  "subtitle": "Manage and generate pedagogical content with AI",
+  "btn_new": "New Scenario",
+  "search_placeholder": "Filter by scenario name...",
+  "card": {
+    "id": "ID",
+    "view_pdf": "PDF Scenario",
+    "report": "General Report",
+    "dialogs": "AI Dialogues",
+    "ia_ready": "AI Ready",
+    "processing": "Processing..."
+  },
+  "modal": {
+    "title": "GlorIA Document Viewer"
+  }
+}

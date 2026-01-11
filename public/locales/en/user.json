@@ -1,0 +1,41 @@
+{
+  "title": "User Management",
+  "sub_title": "Manage roles and access to the GlorIA ecosystem",
+  "btn_new": "New User",
+  "title_edit": "Edit User Profile",
+  "subtitle_edit": "Update credentials and system access level.",
+  "role_admin": "Administrator",
+  "role_user": "User",
+  "btn_save": "Save Changes",
+  "btn_cancel": "Cancel",
+  "contrasena": "New Password",
+  "telefono": "Phone",
+  "table": {
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email Address",
+    "role": "User Role",
+    "actions": "Actions"
+  },
+  "placeholders": {
+    "search": "Search by name, email, or role",
+    "password": "Leave blank to keep current",
+    "loading_text": "Syncing with GlorIA..."
+  },
+  "btn_delete": "Delete User",
+  "btn_confirm": "Yes, deactivate",
+  "btn_create": "Create User",
+  "btn_enable": "Enable User",
+  "btn_disable": "Disable User",
+  "subtitle_register": "Register a new member in the GlorIA ecosystem.",
+  "alerts": {
+    "required_fields": "Name and Role are required fields.",
+    "success_update": "User updated successfully",
+    "error_update": "There was an error saving changes.",
+    "error_load": "Could not load user information.",
+    "confirm_enable": "Do you want to re-enable",
+    "confirm_disable": "Are you sure you want to disable",
+    "success_update_state": "Status updated successfully",
+    "success_register": "User registered successfully"
+  }
+}

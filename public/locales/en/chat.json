@@ -1,0 +1,12 @@
+{
+  "welcome_message": "Hello! I am GlorIA. I'm here to support you in designing your simulation scenarios. What's on your mind?",
+  "assistant_name": "GlorIA Assistant",
+  "status_online": "Online now",
+  "placeholder": "Write your pedagogical intention...",
+  "processing": "GlorIA is processing...",
+  "footer_note": "GlorIA AI • UNAB Mixed Reality Management",
+  "error_connection": "Sorry, I had a connection problem. Could you try again?",
+  "error_no_response": "I didn't receive a clear response.",
+  "label_you": "You",
+  "label_bot": "GlorIA"
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Repositorio de Escenarios",
+  "subtitle": "Administra y genera contenido pedagógico con IA",
+  "btn_new": "Nuevo Escenario",
+  "search_placeholder": "Filtrar por nombre de escenario...",
+  "card": {
+    "id": "ID",
+    "view_pdf": "Escenario PDF",
+    "report": "Reporte General",
+    "dialogs": "Diálogos IA",
+    "ia_ready": "IA Lista",
+    "processing": "Procesando..."
+  },
+  "modal": {
+    "title": "Visor Documental GlorIA"
+  }
+}

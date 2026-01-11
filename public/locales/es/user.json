@@ -1,0 +1,41 @@
+{
+  "title": "Gestión de Usuarios",
+  "sub_title": "Administra los roles y accesos al ecosistema GlorIA",
+  "btn_new": "Nuevo Usuario",
+  "title_edit": "Editar Perfil de Usuario",
+  "subtitle_edit": "Actualiza las credenciales y el nivel de acceso en el sistema.",
+  "role_admin": "Administrador",
+  "role_user": "Usuario",
+  "btn_save": "Guardar Cambios",
+  "btn_cancel": "Cancelar",
+  "contrasena": "Nueva Contraseña",
+  "telefono": "Teléfono",
+  "table": {
+    "name": "Nombre",
+    "phone": "Teléfono",
+    "email": "Correo Electrónico",
+    "role": "Rol de Usuario",
+    "actions": "Acciones"
+  },
+  "placeholders": {
+    "search": "Buscar por nombre, correo o rol",
+    "password": "Dejar en blanco para mantener actual",
+    "loading_text": "Sincronizando con GlorIA..."
+  },
+  "btn_delete": "Eliminar Usuario",
+  "btn_confirm": "Sí, desactivar",
+  "btn_create": "Crear Usuario",
+  "btn_enable": "Habilitar Usuario",
+  "btn_disable": "Desactivar Usuario",
+  "subtitle_register": "Registra un nuevo miembro en el ecosistema GlorIA.",
+  "alerts": {
+    "required_fields": "Nombre y Rol son campos obligatorios.",
+    "success_update": "Usuario actualizado correctamente",
+    "error_update": "Hubo un error al guardar los cambios.",
+    "error_load": "No se pudo cargar la información del usuario.",
+    "confirm_enable": "¿Deseas habilitar nuevamente a",
+    "confirm_disable": "¿Estás seguro de desactivar a",
+    "success_update_state": "Estado actualizado correctamente",
+    "success_register": "Usuario registrado exitosamente"
+  }
+}
