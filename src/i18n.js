@@ -9,7 +9,8 @@ i18n
   .use(initReactI18next) 
   .init({
     fallbackLng: 'es', 
-    debug: true, // Te recomiendo ponerlo en true mientras pruebas en Vercel
+    load: 'languageOnly',
+    //debug: true, // pruebas en Vercel
     
     ns: ['layout', 'scenario', 'user'], 
     defaultNS: 'layout', 
@@ -19,7 +20,6 @@ i18n
     },
 
     backend: {
-      // Esta ruta es correcta para Vercel siempre que los archivos estén en public/locales/...
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
   });
