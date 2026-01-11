@@ -66,9 +66,9 @@ export default class UserService {
   }
 
   static logout() {
-    console.log("Ejecutando limpieza de seguridad...");
-    storage.clear();
-    window.location.replace('/login');
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    window.location.href = '/login';
   }
 
   // --- Helpers de Estado ---

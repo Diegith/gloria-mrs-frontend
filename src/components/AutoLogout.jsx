@@ -2,38 +2,41 @@ import { useEffect } from 'react';
 import UserService from '../service/UserService';
 
 const AutoLogout = () => {
-  // PRUEBA: 10 segundos (10000ms). Luego cámbialo a 15 * 60 * 1000
+  // 15 minutos de inactividad
   const INACTIVITY_TIME = 15 * 60 * 1000; 
 
   useEffect(() => {
     let timer;
 
-    const logout = () => {
-      console.log("TIEMPO AGOTADO");
+    const handleLogout = () => {
+      console.log("Sesión expirada por inactividad");
       UserService.logout();
     };
 
     const resetTimer = () => {
-      // console.log("Actividad detectada, reiniciando timer...");
       if (timer) clearTimeout(timer);
-      timer = setTimeout(logout, INACTIVITY_TIME);
+      timer = setTimeout(handleLogout, INACTIVITY_TIME);
     };
 
-    // Eventos clave de usuario
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'click'];
+    // Eventos que resetean el contador
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
 
-    // Iniciar timer al montar
+    // Inicializar
     resetTimer();
 
-    // Agregar escuchadores al objeto window para máxima cobertura
-    events.forEach(event => window.addEventListener(event, resetTimer));
+    // Listener para cada evento
+    events.forEach(event => {
+      window.addEventListener(event, resetTimer, { passive: true });
+    });
 
-    // Limpiar al desmontar
+    // Cleanup: Muy importante para evitar fugas de memoria y múltiples timers
     return () => {
       if (timer) clearTimeout(timer);
-      events.forEach(event => window.removeEventListener(event, resetTimer));
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimer);
+      });
     };
-  }, []);
+  }, []); // El array vacío asegura que solo se monte una vez
 
   return null;
 };
