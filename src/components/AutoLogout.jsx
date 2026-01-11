@@ -2,19 +2,17 @@ import { useEffect, useRef } from 'react';
 import UserService from '../service/UserService';
 
 const AutoLogout = () => {
-  const INACTIVITY_TIME = 15 * 60 * 1000; 
-  const timerRef = useRef(null); // Usamos useRef para que el timer persista correctamente entre renders
+  const INACTIVITY_TIME = 10000; // 10 segundos para la prueba rápida
+  const timerRef = useRef(null);
+
+  console.log("DEBUG: El archivo AutoLogout.js ha sido cargado");
 
   useEffect(() => {
+    console.log("DEBUG: useEffect de AutoLogout se ha ejecutado");
+
     const handleLogout = () => {
-      console.log("LOG: Ejecutando cierre de sesión por inactividad...");
-      try {
-        UserService.logout();
-      } catch (error) {
-        // Si el service falla, forzamos el cierre aquí mismo
-        localStorage.clear();
-        window.location.href = '/login';
-      }
+      console.log("ALERTA: Ejecutando UserService.logout() AHORA");
+      UserService.logout();
     };
 
     const resetTimer = () => {
@@ -23,20 +21,13 @@ const AutoLogout = () => {
     };
 
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
-
-    // Iniciar
     resetTimer();
 
-    // Agregar listeners
-    events.forEach(event => {
-      window.addEventListener(event, resetTimer, { passive: true });
-    });
+    events.forEach(event => window.addEventListener(event, resetTimer));
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
-      events.forEach(event => {
-        window.removeEventListener(event, resetTimer);
-      });
+      events.forEach(event => window.removeEventListener(event, resetTimer));
     };
   }, []);
 
