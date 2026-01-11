@@ -1,25 +1,25 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import HttpBackend from 'i18next-http-backend';
+import HttpBackend from 'i18next-http-backend'; // <--- Importado correctamente
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 i18n
-  .use(LanguageDetector) // Detecta el idioma del navegador automáticamente
-  .use(initReactI18next) // Integra i18n con React
+  .use(HttpBackend) // <--- ¡FALTABA ESTA LÍNEA! Registra el motor de carga HTTP
+  .use(LanguageDetector) 
+  .use(initReactI18next) 
   .init({
-    fallbackLng: 'es', // Idioma por defecto si falla la detección
-    debug: false,
+    fallbackLng: 'es', 
+    debug: true, // Te recomiendo ponerlo en true mientras pruebas en Vercel
     
-    // Namespaces definidos en tus archivos JSON
     ns: ['layout', 'scenario', 'user'], 
     defaultNS: 'layout', 
     
     interpolation: {
-      escapeValue: false, // React ya protege contra XSS
+      escapeValue: false, 
     },
 
     backend: {
-      // Ruta donde creamos las carpetas anteriormente
+      // Esta ruta es correcta para Vercel siempre que los archivos estén en public/locales/...
       loadPath: '/locales/{{lng}}/{{ns}}.json',
     },
   });
