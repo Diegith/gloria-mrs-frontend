@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import UserService from '../service/UserService';
 
 const AutoLogout = () => {
-  const INACTIVITY_TIME = 150000; // 10 segundos para la prueba rápida
+  const INACTIVITY_TIME = 30 * 60 * 1000; // 30 minutos
   const timerRef = useRef(null);
 
   useEffect(() => {
