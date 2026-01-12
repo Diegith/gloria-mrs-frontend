@@ -5,37 +5,57 @@
   --color-glass-border: rgba(255, 255, 255, 0.2);
   --color-brand-indigo: #6366f1;
   --color-brand-dark: #1e1b4b;
+  --background-image-main-gradient: linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%);
 }
 
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  background: linear-gradient(135deg, #f8fafc 0%, #dbeafe 100%);
-  font-family: 'Inter', sans-serif;
-  /* Suavizado de fuentes para mejor legibilidad */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+    background-image: var(--background-image-main-gradient);
+    font-family: 'Inter', sans-serif;
+    
+    /* Suavizado de fuentes */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    /* Compatibilidad total de redimensionamiento de texto */
+    -webkit-text-size-adjust: 100%;
+    -moz-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+
+    /* Ajuste para Edge */
+    width: -webkit-fill-available;
+  }
 }
 
-.btn-glass {
-  background: var(--color-glass-white);
-  border: 1px solid var(--color-glass-border);
-  -webkit-backdrop-filter: blur(10px); 
-  backdrop-filter: blur(10px);
-  -webkit-user-select: none; 
-  user-select: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+@layer components {
+  .btn-glass {
+    background-color: var(--color-glass-white);
+    border: 1px solid var(--color-glass-border);
+    
+    /* Efecto Glassmorphism con prefijo Safari */
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
 
-.btn-glass:hover {
-  background: rgba(255, 255, 255, 0.6);
-  transform: translateY(-1px);
-}
+    /* Prevención de selección en Safari */
+    -webkit-user-select: none;
+    user-select: none;
+    
+    /* Transición fluida */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
-/* Animación optimizada para GPU */
-.animate-slide-in {
-  animation: slideIn 0.5s ease-out forwards;
-  will-change: transform, opacity;
+  .btn-glass:hover {
+    background-color: rgba(255, 255, 255, 0.6);
+    transform: translateY(-1px);
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out forwards;
+    will-change: transform, opacity;
+  }
 }
 
 @keyframes slideIn {
