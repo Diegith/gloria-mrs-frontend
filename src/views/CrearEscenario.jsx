@@ -1,35 +1,44 @@
 import React, { useState } from 'react';
-import { Save, Wand2, Users, BookOpen, MessageSquare, Play, Loader2, CheckCircle2 } from 'lucide-react';
+import { Wand2, Users, BookOpen, MessageSquare, Loader2, FileDown, Plus, Trash2, RefreshCw, CheckCircle2, CloudUpload } from 'lucide-react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { ejecutarGenerarPDF } from '../utils/pdfGenerator';
-import { crearFormDataEscenario } from '../utils/apiHelpers';
 
 const CrearEscenario = () => {
   const [paso, setPaso] = useState(1);
   const [loading, setLoading] = useState(false);
   const [progreso, setProgreso] = useState(0);
+  const [vistaPrevia, setVistaPrevia] = useState(false);
+  const [escenarioData, setEscenarioData] = useState(null);
 
   const api = axios.create({
-    baseURL: "/api/", // Ajusta según tu puerto
-    timeout: 55000,
+    baseURL: "/api/",
+    timeout: 120000, 
   });
 
   const [formData, setFormData] = useState({
     titulo: '',
+    autores: '', 
     area: '',
-    idioma: 'Español',
     duracion: '',
-    narrativa: '',
-    avatares: [{ nombre: '', actitud: 'Colaborador', secreto: '' }],
+    idioma: 'Español',
+    rolParticipante: '', 
+    descripcionEscenario: '', 
+    objetivos: [{ objetivo: '', resultado: '' }],
+    avatares: [{ nombre: '', actitud: '', secreto: '' }],
     logica: { disparador: '', reaccion: '' }
   });
 
-  
-
+  // --- HANDLERS ---
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleObjetivoChange = (index, e) => {
+    const { name, value } = e.target;
+    const nuevosObjetivos = [...formData.objetivos];
+    nuevosObjetivos[index][name] = value;
+    setFormData({ ...formData, objetivos: nuevosObjetivos });
   };
 
   const handleAvatarChange = (index, e) => {
@@ -43,96 +52,341 @@ const CrearEscenario = () => {
     const { name, value } = e.target;
     setFormData({ ...formData, logica: { ...formData.logica, [name]: value } });
   };
-  
-  const [escenarioGenerado, setEscenarioGenerado] = useState(null);
-  
+
+  const agregarAvatar = () => {
+    setFormData({ ...formData, avatares: [...formData.avatares, { nombre: '', actitud: '', secreto: '' }] });
+  };
+
+  const eliminarAvatar = (index) => {
+    if (formData.avatares.length > 1) {
+      setFormData({ ...formData, avatares: formData.avatares.filter((_, i) => i !== index) });
+    }
+  };
+
+  // --- LÓGICA DE GENERACIÓN JSON ---
   const enviarAGlorIA = async () => {
     const token = localStorage.getItem('token');
     setLoading(true);
     setProgreso(0);
-
-    // Temporizador de 50 segundos
-    const intervalo = setInterval(() => {
-      setProgreso((prev) => {
-        if (prev >= 95) return prev;
-        return prev + 1;
-      });
-    }, 500);
+    const intervalo = setInterval(() => setProgreso((p) => (p >= 95 ? p : p + 1)), 800);
 
     try {
-      const response = await api.post('escenarios/generar-ia', formData, {
+      const response = await api.post('escenarios/generar-ia-json', formData, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
+      setEscenarioData(response.data);
+      setVistaPrevia(true);
       clearInterval(intervalo);
       setProgreso(100);
-
-      // Importante: response.data ya es un objeto si usas Axios correctamente
-      const resIA = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-      setEscenarioGenerado(resIA); 
-      clearInterval(intervalo);
-      setProgreso(100);
-
-      // ejecutarGenerarPDF(resIA.formData, resIA.positivos, resIA.negativos);
-
-      Swal.fire('¡Propuesta Lista!', 'Revisa el guion generado antes de exportar.', 'info');
+      Swal.fire('¡Propuesta Generada!', 'Revisa la matriz técnica antes de descargar el PDF.', 'success');
     } catch (error) {
       clearInterval(intervalo);
-      setProgreso(0);
-      Swal.fire('Error', 'No se pudo conectar con la IA. Revisa el servidor.', 'error');
+      Swal.fire('Error', 'No se pudo procesar la solicitud con la IA.', 'error');
     } finally {
-      setTimeout(() => setLoading(false), 1000);
+      setLoading(false);
     }
   };
-  const manejarGuardadoFinal = async () => {
-      // 1. Generamos el PDF (para tener el objeto 'doc')
-      const doc = ejecutarGenerarPDF(
-          escenarioGenerado.formData, 
-          escenarioGenerado.positivos, 
-          escenarioGenerado.negativos
-      );
 
-      // 2. Preguntamos al usuario
-      const result = await Swal.fire({
-          title: '¿Confirmar Guardado?',
-          text: "Se descargará el PDF y se subirá al servidor para generar diálogos.",
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Sí, guardar todo'
+  const procesarFinalizarGuardar = async () => {
+    const token = localStorage.getItem('token');
+    if (!escenarioData) return;
+
+    setLoading(true);
+    try {
+      // 1. Obtener el Blob del PDF
+      const response = await api.post('escenarios/generar-pdf-desde-json', escenarioData, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        responseType: 'blob'
       });
 
-      if (result.isConfirmed) {
-          setLoading(true);
-          try {
-              // USAMOS LA FUNCIÓN AUXILIAR
-              const data = crearFormDataEscenario(doc, escenarioGenerado);
-              const token = localStorage.getItem('token');
+      const pdfBlob = new Blob([response.data], { type: 'application/pdf' });
 
-              // Enviamos al endpoint que definiste: /crear/upload
-              const response = await axios.post('/api/escenarios/crear/upload', data, {
-                  headers: {
-                      'Authorization': `Bearer ${token}`,
-                      'Content-Type': 'multipart/form-data' // Necesario para enviar archivos
-                  }
-              });
+      // 2. Descarga Local
+      const url = window.URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Guion_${escenarioData.formData.titulo}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
 
-              Swal.fire('¡Éxito!', 'PDF guardado y diálogos en proceso.', 'success');
-              console.log("Servidor respondió con DTO:", response.data);
-              
-          } catch (error) {
-              console.error(error);
-              Swal.fire('Error', 'No se pudo subir el archivo al servidor.', 'error');
-          } finally {
-              setLoading(false);
-          }
-      }
+      // 3. Subida al Sistema (Multipart)
+      const formDataUpload = new FormData();
+      const pdfFile = new File([pdfBlob], `${escenarioData.formData.titulo}.pdf`, { type: 'application/pdf' });
+      formDataUpload.append('file', pdfFile);
+      
+      const metadata = { nombre: escenarioData.formData.titulo };
+      formDataUpload.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+
+      await api.post('escenarios/crear/upload', formDataUpload, {
+        headers: { 
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data' 
+        }
+      });
+
+      Swal.fire('¡Éxito!', 'PDF descargado y guardado en el sistema correctamente.', 'success');
+    } catch (error) {
+      console.error(error);
+      Swal.fire('Error', 'No se pudo completar el guardado en el servidor.', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // --- VISTA PREVIA (RESULTADO IA) ---
+  if (vistaPrevia && escenarioData) {
+    return (
+      <div className="max-w-6xl mx-auto p-6 space-y-8 animate-in fade-in duration-500">
+        {/* Cabecera Principal */}
+        <div className="bg-slate-900 p-8 rounded-[3rem] text-white shadow-2xl flex justify-between items-center border-b-4 border-indigo-500">
+          <div>
+            <h2 className="text-3xl font-black italic">{escenarioData.formData.titulo}</h2>
+            <p className="text-indigo-300 text-xs font-bold mt-1">Escenario Generado por GlorIA</p>
+          </div>
+          <div className="flex gap-4">
+            <button onClick={() => setVistaPrevia(false)} disabled={loading} className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold transition-all flex items-center gap-2">
+              <RefreshCw size={16} /> AJUSTAR
+            </button>
+            <button onClick={procesarFinalizarGuardar} disabled={loading} className="px-8 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-xs font-black shadow-lg flex items-center gap-2 transition-all">
+              {loading ? <Loader2 className="animate-spin" size={18} /> : <CloudUpload size={18} />}
+              FINALIZAR Y GUARDAR
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            {/* Narrativa y Objetivos */}
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-indigo-600 font-black text-xs uppercase mb-4 tracking-widest">Descripición del escenario</h3>
+              <p className="text-slate-600 leading-relaxed italic mb-6">"{escenarioData.formData.descripcionEscenario}"</p>
+
+              <h3 className="text-indigo-600 font-black text-xs uppercase mb-4 tracking-widest">Objetivos y resultados de aprendizaje</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {escenarioData.formData.objetivos.map((obj, i) => (
+                  <div key={i} className="flex gap-3 items-start p-3 bg-slate-50 rounded-xl">
+                    <CheckCircle2 className="text-indigo-500 mt-1" size={16} />
+                    <div>
+                      <p className="text-sm font-bold text-slate-700">{obj.objetivo}</p>
+                      <p className="text-xs text-slate-500">{obj.resultado}</p>
+                    </div>
+                  </div>
+                ))}
+                <h3 className="text-indigo-600 font-black text-xs uppercase mb-4 tracking-widest">Comportamientos y conocimientos</h3>
+                <p className="text-s text-gray-700 mt-1">En una simulación exitosa, el participante deberá evidenciar (Describa los comportamientos y conocimientos): </p>
+                <p className="text-xs text-gray-700 mt-1 italic">{escenarioData.formData.comportamientosYConocimientos}</p>
+              </div>
+            </section>
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-green-600 font-black text-xs uppercase mb-4 tracking-widest">2. Contenido</h3>
+              <p className="text-s text-gray-700 mt-1">Describir el contenido académico y otras actitudes que el o los avatares deben tener durante la simulación: </p>
+              <div className="space-y-4">               
+                  <div className="p-4 bg-green-50/50 rounded-2xl border-l-4 border-green-500">
+                    <p className="text-sm font-bold text-slate-800">{escenarioData.formData.contenido}</p>
+                  </div>
+              </div>
+            </section>
+
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-green-600 font-black text-xs uppercase mb-4 tracking-widest">3. Escenario</h3>
+              <div className="space-y-4">
+                {escenarioData.formData.escenarios.map((e, i) => (
+                  <div key={i} className="p-4 bg-green-50/50 rounded-2xl border-l-4 border-green-500">
+                    <p className="text-sm font-bold text-slate-800">{e.escenario}</p>                    
+                  </div>
+                ))}
+                <p className="text-xs text-gray-700 mt-1 italic">Antes de la simulación, ¿qué debe saber el participante sobre la simulación?</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.preSimulacion}</p>
+
+                <p className="text-xs text-gray-700 mt-1 italic">¿Qué conocimientos (contenido) debe tener el participante antes de la simulación?</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.conocimientosPrevios}</p>
+
+                <p className="text-xs text-gray-700 mt-1 italic">¿Qué debe suceder durante la simulación? ¿Cómo se debe comportar el avatar y el participante?(Detallar los comportamientos, pasos y procesos)</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.comportamientosSimulacion}</p>
+                
+                <p className="text-xs text-gray-700 mt-1 italic">¿Cuándo y cómo debería terminar la simulación?</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.finalSimulacion}</p>
+              </div>
+            </section>
+
+
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-green-600 font-black text-xs uppercase mb-4 tracking-widest">4. Personajes</h3>
+              <div className="space-y-4">
+                {escenarioData.formData.escenarios.map((e, i) => (
+                  <div key={i} className="p-4 bg-green-50/50 rounded-2xl border-l-4 border-green-500">
+                    <p className="text-sm font-bold text-slate-800">{e.escenario}</p>                    
+                  </div>
+                ))}
+                <p className="text-xs text-gray-700 mt-1 italic">Adultos</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.personajesAdultos}</p>
+
+                <p className="text-xs text-gray-700 mt-1 italic">Niños / Jovenes</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.personajesNinosJovenes}</p>
+
+                <p className="text-xs text-gray-700 mt-1 italic">Dificultad</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.dificultad}</p>                
+              </div>
+            </section>
+            
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+              <h3 className="text-green-600 font-black text-xs uppercase mb-4 tracking-widest">4. Retroalimentación y alineación de la respuesta de los personajes con el participante</h3>
+              <div className="space-y-4">
+                <p className="text-xs text-gray-700 mt-1 italic">¿Cuál será el tipo de retroalimentación que el facilitador/docente dará a los participantes?</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.retroalimentacionDocente}</p>
+
+                <p className="text-xs text-gray-700 mt-1 italic">¿Qué debe hacer el participante después de la simulación?</p>
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.accionesPostSimulacion}</p>              
+              </div>
+            </section>
+            {/* SECCIÓN: MATRIZ DE COMPORTAMIENTOS TÉCNICOS (POSITIVOS) */}
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="p-2 bg-green-100 text-green-600 rounded-lg">
+                  <CheckCircle2 size={20} />
+                </div>
+                <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest">
+                  Acciones embebidas en la simulación
+                </h3>
+                <p className="text-xs text-green-700 mt-1 italic">Describa las acciones específicas que deben ocurrir, al menos una vez, a lo largo de la simulación. (Por ejemplo: el personaje (avatar) sacará su  celular cuando esté en medio de una conversación). Los personajes (avatares) utilizarán esta información para reaccionar si el participante está logrando o no los objetivos propuestos.</p>
+              </div>
+              <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest">Comportamientos Positivos (Aciertos) </h3>
+              <div className="overflow-x-auto -mx-4 md:mx-0">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead>
+                    <tr className="bg-green-600 text-white font-bold uppercase text-[10px] tracking-tighter">
+                      <th className="p-4 rounded-tl-2xl">Objetivo Pedagógico</th>
+                      <th className="p-4">Activador (Acción del Alumno)</th>
+                      <th className="p-4">Respuesta Positiva (Avatar)</th>
+                      <th className="p-4">Respuesta Negativa (Avatar)</th>
+                      <th className="p-4 rounded-tr-2xl">Ejemplo Práctico</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {escenarioData.positivos && escenarioData.positivos.length > 0 ? (
+                      escenarioData.positivos.map((item, index) => (
+                        <tr key={index} className="hover:bg-green-50/40 transition-colors duration-200">
+                          <td className="p-4 text-xs font-bold text-slate-700 align-top w-[15%]">
+                            {item.objetivo || "General"}
+                          </td>
+                          <td className="p-4 text-[11px] text-slate-600 italic align-top w-[20%]">
+                            {item.activador}
+                          </td>
+                          <td className="p-4 text-[11px] text-green-700 font-medium align-top w-[25%] bg-green-50/20">
+                            {item.respuestaPositiva}
+                          </td>
+                          <td className="p-4 text-[11px] text-red-600 align-top w-[20%]">
+                            {item.respuestaNegativa || "N/A"}
+                          </td>
+                          <td className="p-4 text-[10px] text-slate-500 leading-relaxed align-top w-[20%]">
+                            <span className="bg-slate-100 px-2 py-1 rounded-md block mb-1 font-bold text-[9px] w-fit">EJEMPLO</span>
+                            {item.ejemplo}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="p-8 text-center text-slate-400 italic">No hay datos de comportamiento disponibles.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+            {/* SECCIÓN: MATRIZ DE DESACIERTOS Y PLAN DE RECUPERACIÓN */}
+            <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="p-2 bg-red-100 text-red-600 rounded-lg">
+                  <MessageSquare size={20} />
+                </div>
+                <h3 className="text-slate-800 font-black text-sm uppercase tracking-widest">
+                  Comportamientos problemáticos (Desaciertos) 
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto -mx-4 md:mx-0">
+                <table className="w-full text-left border-collapse min-w-[800px]">
+                  <thead>
+                    <tr className="bg-red-600 text-white font-bold uppercase text-[10px] tracking-tighter">
+                      <th className="p-4 rounded-tl-2xl">Objetivo Pedagógico</th>
+                      <th className="p-4">Activador (Error del Alumno)</th>
+                      <th className="p-4">Reacción Hostil (Avatar)</th>
+                      <th className="p-4">Plan de Recuperación</th>
+                      <th className="p-4 rounded-tr-2xl">Ejemplo de Fallo</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {escenarioData.negativos && escenarioData.negativos.length > 0 ? (
+                      escenarioData.negativos.map((item, index) => (
+                        <tr key={index} className="hover:bg-red-50/40 transition-colors duration-200">
+                          <td className="p-4 text-xs font-bold text-slate-700 align-top w-[15%]">
+                            {item.objetivo || "General"}
+                          </td>
+                          <td className="p-4 text-[11px] text-red-700 italic align-top w-[20%]">
+                            {item.activador}
+                          </td>
+                          <td className="p-4 text-[11px] text-slate-600 align-top w-[20%] bg-red-50/10">
+                            {item.respuestaNegativa}
+                          </td>
+                          <td className="p-4 text-[11px] text-indigo-700 font-semibold align-top w-[25%] bg-indigo-50/30">
+                            <div className="flex gap-1 items-start">
+                              <RefreshCw size={12} className="mt-0.5 shrink-0" />
+                              {item.recuperacion || "Sin plan definido"}
+                            </div>
+                          </td>
+                          <td className="p-4 text-[10px] text-slate-500 leading-relaxed align-top w-[20%]">
+                            <span className="bg-red-100 text-red-700 px-2 py-1 rounded-md block mb-1 font-bold text-[9px] w-fit">ALERTA</span>
+                            {item.ejemplo}
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="5" className="p-8 text-center text-slate-400 italic">No se detectaron matrices de error para este escenario.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+            
+
+          {/* Sidebar: Avatares y Feedback */}
+          <div className="space-y-6">
+            <div className="bg-indigo-600 p-8 rounded-[2.5rem] text-white shadow-xl">
+              <h3 className="font-black text-xs uppercase tracking-widest mb-6 flex items-center gap-2">
+                <Users size={18}/> Perfiles de Avatares
+              </h3>
+              <div className="space-y-6 text-xs leading-relaxed opacity-90">
+                {escenarioData.formData.comportamientosSimulacion.split('\n').map((parrafo, i) => (
+                  <p key={i}>{parrafo}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-slate-100 p-8 rounded-[2.5rem] border border-slate-200">
+              <h3 className="text-slate-400 font-black text-[10px] uppercase mb-4 tracking-widest">Guía de Retroalimentación</h3>
+              <p className="text-xs text-slate-600 leading-tight italic">
+                {escenarioData.formData.retroalimentacionDocente}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    );
+  }
+
+  // --- VISTA FORMULARIO ---
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-8 animate-in fade-in duration-700">
+    <div className="max-w-5xl mx-auto p-6 space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">Diseño de Escenario</h1>
-          <p className="text-slate-500 font-medium">Configura los parámetros para la IA</p>
+          <h1 className="text-3xl font-black text-slate-800 italic tracking-tight">Crear Nuevo Escenario</h1>
+          <p className="text-slate-500 font-medium">Diseña la base pedagógica para la IA GlorIA</p>
         </div>
         <div className="flex gap-2">
           {[1, 2, 3].map((num) => (
@@ -142,235 +396,129 @@ const CrearEscenario = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6 bg-white/40 backdrop-blur-md p-8 rounded-[2.5rem] border border-white/60 shadow-xl">
+        <div className="lg:col-span-2 space-y-6 bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-xl">
           
-          {/* Renderizado de Pasos */}
           {paso === 1 && (
-            <div className="space-y-4 animate-in slide-in-from-right-4">
-              <div className="flex items-center gap-2 text-indigo-600 mb-4 font-bold uppercase tracking-wider text-sm">
-                <BookOpen size={20} /> Información Básica
+            <div className="space-y-5 animate-in slide-in-from-right-4">
+              <div className="flex items-center gap-2 text-indigo-600 mb-2 font-bold uppercase text-[10px] tracking-widest">
+                <BookOpen size={18} /> Paso 1: Información Base
               </div>
-              <input name="titulo" value={formData.titulo} onChange={handleInputChange} type="text" placeholder="Nombre del escenario..." className="w-full p-4 rounded-2xl border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-600 outline-none" />
+              <input name="titulo" value={formData.titulo} onChange={handleInputChange} type="text" placeholder="Título del escenario" className="w-full p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-indigo-600 outline-none" />
               <div className="grid grid-cols-2 gap-4">
-                <select name="idioma" value={formData.idioma} onChange={handleInputChange} className="p-4 rounded-2xl border-none ring-1 ring-slate-200 bg-white">
+                <input name="autores" value={formData.autores} onChange={handleInputChange} type="text" placeholder="Autores" className="p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
+                <input name="area" value={formData.area} onChange={handleInputChange} type="text" placeholder="Área académica" className="p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <select name="idioma" value={formData.idioma} onChange={handleInputChange} className="p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none">
                   <option value="Español">Español</option>
                   <option value="Inglés">Inglés</option>
                 </select>
-                <input name="duracion" value={formData.duracion} onChange={handleInputChange} type="number" placeholder="Minutos" className="p-4 rounded-2xl border-none ring-1 ring-slate-200" />
+                <input name="duracion" value={formData.duracion} onChange={handleInputChange} type="number" placeholder="Minutos" className="p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
+                <input name="rolParticipante" value={formData.rolParticipante} onChange={handleInputChange} type="text" placeholder="Rol aprendiz" className="p-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
               </div>
-              <textarea name="narrativa" value={formData.narrativa} onChange={handleInputChange} placeholder="Narrativa corta..." className="w-full p-4 h-32 rounded-2xl border-none ring-1 ring-slate-200" />
+              <textarea name="descripcionEscenario" value={formData.descripcionEscenario} onChange={handleInputChange} placeholder="Describe brevemente el conflicto principal del escenario..." className="w-full p-4 h-28 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
+            <div className="space-y-3 pt-4">
+
+            <div className="flex justify-between items-center">
+              <p className="text-[10px] font-black uppercase text-indigo-400 tracking-widest">Objetivos Pedagógicos</p>
+              <button 
+                onClick={() => setFormData({...formData, objetivos: [...formData.objetivos, {objetivo: '', resultado: ''}]})}
+                className="p-1.5 bg-indigo-100 text-indigo-600 rounded-lg hover:bg-indigo-200"
+              >
+                <Plus size={16}/>
+              </button>
             </div>
+            {formData.objetivos.map((obj, i) => (
+              <div key={i} className="grid grid-cols-1 md:grid-cols-2 gap-3 animate-in fade-in">
+                <input 
+                  value={obj.objetivo} 
+                  onChange={(e) => handleObjetivoChange(i, e)} 
+                  name="objetivo"
+                  placeholder="Objetivo (ej: Comunicar propósito)" 
+                  className="p-3 bg-slate-50 rounded-xl text-sm ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-indigo-600" 
+                />
+                <input 
+                  value={obj.resultado} 
+                  onChange={(e) => handleObjetivoChange(i, e)} 
+                  name="resultado"
+                  placeholder="Resultado esperado" 
+                  className="p-3 bg-slate-50 rounded-xl text-sm ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-indigo-600" 
+                />
+              </div>
+            ))}
+          </div>
+            
+            </div>
+            
           )}
 
           {paso === 2 && (
-            <div className="space-y-4">
-               {/* Campos de Avatares similares a tu código original */}
-               {formData.avatares.map((avatar, index) => (
-                <div key={index} className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 space-y-3">
-                  <input name="nombre" value={avatar.nombre} onChange={(e) => handleAvatarChange(index, e)} placeholder="Nombre Avatar" className="w-full bg-transparent border-b border-indigo-200 p-2 outline-none" />
-                  <textarea name="secreto" value={avatar.secreto} onChange={(e) => handleAvatarChange(index, e)} placeholder="Secreto/Información oculta" className="w-full bg-transparent p-2 outline-none text-sm" />
+            <div className="space-y-4 animate-in slide-in-from-right-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-indigo-600 font-bold uppercase text-[10px] tracking-widest">Paso 2: Avatares Sugeridos</span>
+                <button onClick={agregarAvatar} className="text-xs bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold shadow-md">+ Nuevo</button>
+              </div>
+              {formData.avatares.map((avatar, index) => (
+                <div key={index} className="p-6 bg-slate-50 rounded-[2rem] border border-slate-200 relative group transition-all hover:shadow-md">
+                  <button onClick={() => eliminarAvatar(index)} className="absolute top-4 right-4 text-slate-300 hover:text-red-500"><Trash2 size={18}/></button>
+                  <input name="nombre" value={avatar.nombre} onChange={(e) => handleAvatarChange(index, e)} placeholder="Nombre o Cargo del Avatar" className="w-full bg-transparent border-b border-slate-200 text-sm py-2 outline-none font-bold" />
+                  <input name="actitud" value={avatar.actitud} onChange={(e) => handleAvatarChange(index, e)} placeholder="Actitud (Ej: Hostil)" className="w-full bg-transparent border-b border-slate-200 text-xs py-2 outline-none italic" />
+                  <textarea name="secreto" value={avatar.secreto} onChange={(e) => handleAvatarChange(index, e)} placeholder="¿Qué información oculta o defiende este avatar?" className="w-full bg-transparent text-xs py-2 outline-none h-16 resize-none" />
                 </div>
               ))}
-              <button onClick={() => setFormData({...formData, avatares: [...formData.avatares, {nombre: '', actitud: 'Colaborador', secreto: ''}]})} className="text-indigo-600 font-bold">+ Agregar Avatar</button>
             </div>
           )}
 
           {paso === 3 && (
-            <div className="space-y-4">
-              <input name="disparador" value={formData.logica.disparador} onChange={handleLogicaChange} placeholder="Input del participante..." className="w-full p-4 rounded-2xl ring-1 ring-slate-200" />
-              <textarea name="reaccion" value={formData.logica.reaccion} onChange={handleLogicaChange} placeholder="Reacción inicial..." className="w-full p-4 rounded-2xl ring-1 ring-slate-200" />
+            <div className="space-y-6 animate-in slide-in-from-right-4">
+               <div className="text-indigo-600 font-bold uppercase text-[10px] tracking-widest flex items-center gap-2"><MessageSquare size={16}/> Paso 3: Disparador Inicial</div>
+               <div className="bg-indigo-50 p-6 rounded-3xl">
+                 <label className="text-[10px] font-black text-indigo-400 uppercase ml-1">Frase que inicia el diálogo</label>
+                 <input name="disparador" value={formData.logica.disparador} onChange={handleLogicaChange} placeholder="Ej: 'Buenos días, he venido a proponer un cambio en la estrategia...'" className="w-full bg-transparent border-b border-indigo-200 p-2 outline-none text-slate-700 font-medium" />
+               </div>
+               <textarea name="reaccion" value={formData.logica.reaccion} onChange={handleLogicaChange} placeholder="Describe la reacción inicial que esperas de los avatares ante esta frase..." className="w-full p-4 h-40 rounded-3xl bg-slate-50 border-none ring-1 ring-slate-200 outline-none" />
             </div>
           )}
 
-          {/* BARRA DE PROGRESO INSTITUCIONAL */}
           {loading && (
-            <div className="py-4 space-y-2 animate-pulse">
-              <div className="flex justify-between text-[10px] font-black text-[#005696] uppercase">
-                <span>GlorIA está redactando el PDF...</span>
+            <div className="py-6 space-y-3">
+              <div className="flex justify-between text-[10px] font-black text-indigo-600 uppercase tracking-tighter">
+                <span>GlorIA está analizando y redactando...</span>
                 <span>{progreso}%</span>
               </div>
-              <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-[#005696] transition-all duration-500 ease-out" 
-                  style={{ width: `${progreso}%` }} 
-                />
+              <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                <div className="h-full bg-indigo-600 transition-all duration-500 ease-out" style={{ width: `${progreso}%` }} />
               </div>
             </div>
           )}
 
-          <div className="flex justify-between pt-6 border-t border-slate-100">
-            <button onClick={() => setPaso(prev => prev - 1)} className={`px-6 py-2 font-bold ${paso === 1 ? 'invisible' : ''}`}>Anterior</button>
+          <div className="flex justify-between pt-8 border-t border-slate-100 mt-6">
+            <button onClick={() => setPaso(prev => prev - 1)} className={`px-6 py-2 font-bold text-slate-400 ${paso === 1 ? 'invisible' : ''}`}>Regresar</button>
             <button 
               onClick={() => paso === 3 ? enviarAGlorIA() : setPaso(prev => prev + 1)}
               disabled={loading}
-              className="px-8 py-3 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg disabled:opacity-50 flex items-center gap-2"
+              className="px-10 py-4 bg-indigo-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl disabled:opacity-50 hover:bg-indigo-700 transition-all"
             >
-              {loading ? <Loader2 className="animate-spin" /> : (paso === 3 ? 'Generar con IA' : 'Siguiente')}
+              {loading ? <Loader2 className="animate-spin" size={20} /> : (paso === 3 ? 'Diseñar Propuesta' : 'Siguiente')}
             </button>
           </div>
         </div>
 
-        {/* Panel Lateral */}
-        <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white h-fit space-y-4 shadow-2xl relative overflow-hidden">
-          <div className="relative z-10">
-            <Wand2 className="text-indigo-400 mb-4" size={32} />
-            <h3 className="font-bold text-lg italic">Asistente GlorIA</h3>
-            <p className="text-slate-400 text-xs leading-relaxed mt-2">
-              Analizaré tu narrativa básica para construir los objetivos pedagógicos y las tablas de comportamiento exigidas por la UNAB.
+        <div className="bg-slate-900 rounded-[3rem] p-10 text-white h-fit shadow-2xl relative overflow-hidden border border-slate-800">
+            <Wand2 className="text-indigo-400 mb-6" size={40} />
+            <h3 className="font-bold text-xl italic mb-3">Asistente GlorIA</h3>
+            <p className="text-slate-400 text-xs leading-relaxed italic opacity-80">
+              Al procesar los datos, crearé las tablas de comportamientos, activadores y planes de recuperación siguiendo los lineamientos pedagógicos de la UNAB.
             </p>
-          </div>
-          <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"></div>
+            <div className="mt-10 pt-6 border-t border-slate-800">
+              <div className="flex items-center gap-3 text-indigo-300">
+                <CheckCircle2 size={16}/>
+                <span className="text-[10px] font-bold uppercase">Formato PDF Oficial</span>
+              </div>
+            </div>
         </div>
       </div>
-      {escenarioGenerado && (
-        <div className="mt-12 space-y-8 animate-in slide-in-from-bottom-10 duration-1000">
-          <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-200 overflow-hidden">
-            
-            {/* HEADER INSTITUCIONAL */}
-            <div className="bg-[#003366] p-8 text-white flex justify-between items-center">
-              <div>
-                <div className="flex items-center gap-2 text-indigo-300 mb-2">
-                  <CheckCircle2 size={20} />
-                  <span className="text-xs font-black uppercase tracking-widest">Guion Técnico Oficial - UNAB</span>
-                </div>
-                <h2 className="text-2xl font-bold">{escenarioGenerado.formData.nombreEscenario}</h2>
-              </div>
-              <div className="flex gap-4">
-                <button onClick={enviarAGlorIA} className="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-2xl font-bold text-sm transition-all flex items-center gap-2">
-                  <Wand2 size={18} /> Regenerar
-                </button>
-                <button 
-                  onClick={manejarGuardadoFinal} // <--- AQUÍ USAMOS LA FUNCIÓN AUXILIAR
-                  disabled={loading}
-                  className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold text-sm transition-all shadow-lg flex items-center gap-2"
-              >
-                  {loading ? <Loader2 className="animate-spin" /> : <><Save size={18} /> Guardar y Exportar PDF</>}
-              </button>
-              </div>
-            </div>
-
-            <div className="p-10 space-y-10 text-sm">
-
-              {/* INFORMACIÓN GENERAL */}
-              <section className="bg-slate-50 p-6 rounded-3xl">
-                <h3 className="text-[#003366] font-black uppercase text-xs mb-4 border-b pb-2">Información General</h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div><p className="text-slate-400 font-bold text-[10px] uppercase">Autores</p><p>{escenarioGenerado.formData.autores}</p></div>
-                  <div><p className="text-slate-400 font-bold text-[10px] uppercase">Áreas</p><p>{escenarioGenerado.formData.areasConocimiento}</p></div>
-                  <div><p className="text-slate-400 font-bold text-[10px] uppercase">Duración</p><p>{escenarioGenerado.formData.duracion} min</p></div>
-                  <div><p className="text-slate-400 font-bold text-[10px] uppercase">Idioma</p><p>{escenarioGenerado.formData.lenguaje}</p></div>
-                </div>
-              </section>
-
-              {/* SECCIÓN 1: EL PARTICIPANTE */}
-              <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="md:col-span-1">
-                  <h3 className="text-[#005696] font-black uppercase text-xs mb-4">Sección 1: El Participante</h3>
-                  <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
-                    <p className="text-indigo-900 font-bold text-[10px] uppercase">Rol</p>
-                    <p>{escenarioGenerado.formData.rolParticipante}</p>
-                  </div>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-slate-400 font-bold text-[10px] uppercase mb-2">Escenario (Narrativa Técnica)</p>
-                  <p className="italic text-slate-600 leading-relaxed">"{escenarioGenerado.formData.descripcionEscenario}"</p>
-                </div>
-              </section>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                {/* SECCIÓN 2: CONTENIDO */}
-                <section className="space-y-4">
-                  <h3 className="text-[#005696] font-black uppercase text-xs mb-2">Sección 2: Contenido</h3>
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-slate-600 whitespace-pre-line">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase mb-2">Descripción de Avatares</p>
-                    {escenarioGenerado.formData.contenidoAcademico}
-                  </div>
-                </section>
-
-                {/* SECCIÓN 3: ESCENARIO */}
-                <section className="space-y-4">
-                  <h3 className="text-[#005696] font-black uppercase text-xs mb-2">Sección 3: Escenario</h3>
-                  <div className="grid grid-cols-1 gap-4 text-[13px]">
-                    <p><span className="font-bold">Ambientes:</span> {escenarioGenerado.formData.escenario1} / {escenarioGenerado.formData.escenario2}</p>
-                    <p><span className="font-bold">Pre-Simulación:</span> {escenarioGenerado.formData.preSimulacion}</p>
-                    <p><span className="font-bold">Conocimientos Previos:</span> {escenarioGenerado.formData.conocimientosPrevios}</p>
-                    <p><span className="font-bold">Dinámica:</span> {escenarioGenerado.formData.comportamientosSimulacion}</p>
-                  </div>
-                </section>
-              </div>
-
-              {/* SECCIÓN 4 Y 5: PERSONAJES Y RETROALIMENTACIÓN */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 border-t pt-10">
-                <section>
-                  <h3 className="text-[#005696] font-black uppercase text-xs mb-4">Sección 4: Personajes y Dificultad</h3>
-                  <div className="flex gap-10">
-                    <div><p className="text-slate-400 font-bold text-[10px] uppercase">Adultos</p><p>{escenarioGenerado.formData.personajesAdultos}</p></div>
-                    <div><p className="text-slate-400 font-bold text-[10px] uppercase">Dificultad</p><p className="font-black text-indigo-600 uppercase italic">{escenarioGenerado.formData.dificultad}</p></div>
-                  </div>
-                </section>
-                <section>
-                  <h3 className="text-[#005696] font-black uppercase text-xs mb-4">Sección 5: Retroalimentación</h3>
-                  <p className="text-slate-600 leading-relaxed text-[13px]">{escenarioGenerado.formData.retroalimentacion}</p>
-                </section>
-              </div>
-
-              {/* TABLAS DE COMPORTAMIENTO (ACCIONES EMBEBIDAS) */}
-              <div className="space-y-6 pt-10 border-t">
-                <h3 className="text-[#003366] font-black uppercase text-xs">Tablas de Comportamiento</h3>
-                
-                <div className="overflow-hidden rounded-3xl border border-green-100">
-                  <table className="w-full text-left">
-                    <thead className="bg-green-600 text-white text-[10px] uppercase">
-                      <tr><th className="p-4">Objetivo / Activador Positivo</th><th className="p-4">Respuesta Avatar</th><th className="p-4">Ejemplo Diálogo</th></tr>
-                    </thead>
-                    <tbody className="bg-green-50/20 text-[12px]">
-                      {escenarioGenerado.positivos.map((p, i) => (
-                        <tr key={i} className="border-t border-green-100">
-                          <td className="p-4 font-bold text-green-900">{p.activador}</td>
-                          <td className="p-4">{p.respuestaPositiva}</td>
-                          <td className="p-4 italic text-slate-500">"{p.ejemplo}"</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                <div className="overflow-hidden rounded-3xl border border-red-100">
-                  <table className="w-full text-left">
-                    <thead className="bg-red-600 text-white text-[10px] uppercase">
-                      <tr><th className="p-4">Comportamiento Problemático</th><th className="p-4">Reacción Negativa</th><th className="p-4">Plan de Recuperación</th></tr>
-                    </thead>
-                    <tbody className="bg-red-50/20 text-[12px]">
-                      {escenarioGenerado.negativos.map((n, i) => (
-                        <tr key={i} className="border-t border-red-100">
-                          <td className="p-4 font-bold text-red-900">{n.activador}</td>
-                          <td className="p-4">{n.respuestaNegativa}</td>
-                          <td className="p-4 font-medium text-slate-600">{n.recuperacion}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* CONSENTIMIENTO */}
-              <section className="bg-slate-900 p-8 rounded-[2.5rem] text-white flex justify-between items-center">
-                <div>
-                  <h3 className="text-indigo-400 font-black uppercase text-[10px] tracking-[0.2em] mb-2">Consentimiento Informado</h3>
-                  <p className="text-xs text-slate-400">Firmado por: {escenarioGenerado.formData.nombreConsentimiento} • {escenarioGenerado.formData.fechaConsentimiento}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[10px] font-bold uppercase text-slate-500">Documento</p>
-                  <p className="font-mono">{escenarioGenerado.formData.documentoConsentimiento}</p>
-                </div>
-              </section>
-
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-    
   );
 };
 
