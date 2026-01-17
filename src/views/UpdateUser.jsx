@@ -97,7 +97,7 @@ const UpdateUser = () => {
         className="flex items-center gap-2 text-slate-500 hover:text-brand-indigo mb-6 font-bold transition-colors group"
       >
         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-        <span>{t('table.actions')}</span>
+        <span>{t('table.back')}</span>
       </button>
 
       <div className="mb-8">

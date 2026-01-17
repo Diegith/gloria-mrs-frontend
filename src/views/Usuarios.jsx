@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../api/apiConfig';
 import { useTranslation } from 'react-i18next';
 import { UserPlus, Edit, Trash2, ShieldCheck, Search, Loader2, UserCheck } from 'lucide-react';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+
+import api from '../api/apiConfig';
 import UserService from '../service/UserService';
 import UserProfileButton from '../components/UserProfileButton';
 
@@ -13,26 +14,25 @@ const MySwal = withReactContent(Swal);
 const Usuarios = () => {
   const { t } = useTranslation('user');
   const navigate = useNavigate();
+  
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
-  // Un solo useEffect para cargar y verificar el estado inicial
+  // Helper para normalizar el booleano 'activo'
+  const parseActivo = (val) => val === true || String(val).toLowerCase() === 'true';
+
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
         const res = await api.get('/usuarios/listar?page=0&size=10');
-        
         const usersNormalizados = (res.data.users || []).map(u => ({
           ...u,
-          // Forzamos que 'activo' sea booleano. 
-          // Si el backend devuelve null o undefined, decidimos si por defecto es true o false.
-
-          activo: u.activo === true || String(u.activo).toLowerCase() === 'true'
+          activo: parseActivo(u.activo)
         }));
         setUsuarios(usersNormalizados);
       } catch (err) {
-        console.error("Error al cargar", err);
+        console.error("Error al cargar usuarios", err);
       } finally {
         setLoading(false);
       }
@@ -40,12 +40,15 @@ const Usuarios = () => {
     fetchUsuarios();
   }, []);
 
-  const usuariosFiltrados = usuarios.filter(user =>
-    user.nombre?.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  console.log("Usuarios cargados:", usuarios);
+  // Optimización: Filtrado con useMemo
+  const usuariosFiltrados = useMemo(() => {
+    return usuarios.filter(user =>
+      user.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+    );
+  }, [usuarios, busqueda]);
 
   const handleCambiarEstado = async (user) => {
-    // Definimos el cambio basado estrictamente en el estado actual
     const nuevoEstado = !user.activo;
 
     const result = await MySwal.fire({
@@ -63,17 +66,18 @@ const Usuarios = () => {
 
     if (result.isConfirmed) {
       try {
-        // 1. Llamada al PATCH
         const res = await UserService.cambiarEstado(user.id, nuevoEstado);
         
-        // IMPORTANTE: 'res' debe ser el objeto que devuelve tu Spring Boot
-        // que contiene el nuevo campo 'activo' guardado en la DB.
-        
         setUsuarios(prev => prev.map(u => 
-          u.id === user.id ? { ...u, activo: res.activo === true || String(res.activo).toLowerCase() === 'true' } : u
+          u.id === user.id ? { ...u, activo: parseActivo(res.activo) } : u
         ));
 
-        // ... (Alerta de éxito)
+        MySwal.fire({
+          title: t('alerts.success_title') || '¡Éxito!',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        });
       } catch (err) {
         MySwal.fire('Error', t('alerts.error_delete'), 'error');
       }
@@ -109,7 +113,7 @@ const Usuarios = () => {
         />
       </div>
 
-      {/* Tabla */}
+      {/* Tabla Container */}
       <div className="bg-white/30 backdrop-blur-md border border-white/50 rounded-[2.5rem] shadow-xl overflow-hidden">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -124,16 +128,13 @@ const Usuarios = () => {
                   <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter">{t('table.name')}</th>
                   <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter">{t('table.phone')}</th>
                   <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter">{t('table.role')}</th>
-                  <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter">Activo</th>
+                  <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter">{t('table.status')}</th>
                   <th className="p-6 font-black text-slate-700 uppercase text-xs tracking-tighter text-right">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/20">
                 {usuariosFiltrados.map((user) => {
-                  
-                  // DEFINE LA VARIABLE AQUÍ PARA CADA FILA
-                  console.log("Estado 'activo' del usuario:", user.nombre, user.activo);
-                  const isUserActive = UserService.getActiveUserId() === user.id ? true : Boolean(user.activo);
+                  const isUserActive = parseActivo(user.activo);
 
                   return (
                     <tr 
@@ -146,7 +147,9 @@ const Usuarios = () => {
                             {user.nombre}
                           </div>
                           {!isUserActive && (
-                             <span className="px-2 py-0.5 text-[9px] bg-slate-200 text-slate-600 rounded-lg font-black uppercase tracking-widest">Inactivo</span>
+                             <span className="px-2 py-0.5 text-[9px] bg-slate-200 text-slate-600 rounded-lg font-black uppercase tracking-widest">
+                               {t('status_inactive') || 'Inactivo'}
+                             </span>
                           )}
                         </div>
                       </td>
@@ -161,19 +164,22 @@ const Usuarios = () => {
                           {user.rol === 'ROLE_ADMIN' ? t('role_admin') : t('role_user')}
                         </span>
                       </td>
-                      <td>
-                        {isUserActive ? (
-                          <span className="inline-block px-3 py-1 bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold uppercase tracking-tight">Sí</span>
-                        ) : (
-                          <span className="inline-block px-3 py-1 bg-rose-100 text-rose-700 rounded-xl text-xs font-bold uppercase tracking-tight">No</span>
-                        )}
-                      </td>
                       <td className="p-6">
+                        <span className={`px-3 py-1 rounded-xl text-xs font-bold uppercase ${
+                          isUserActive 
+                            ? 'bg-emerald-100 text-emerald-700' 
+                            : 'bg-rose-100 text-rose-700'
+                        }`}>
+                          {isUserActive ? t('table.status_active') : t('table.status_inactive')}
+                        </span>
+                      </td>                      
+                      <td className="p-6 text-right">
                         <div className="flex justify-end gap-2">
                           <UserProfileButton />
                           <button 
                             onClick={() => navigate(`/update-user/${user.id}`)}
                             className="p-2 bg-white/60 hover:bg-brand-indigo hover:text-white text-slate-600 rounded-xl transition-all shadow-sm"
+                            title={t('btn_edit')}
                           >
                             <Edit size={18} />
                           </button>
@@ -187,7 +193,11 @@ const Usuarios = () => {
                             }`}
                             title={isUserActive ? t('btn_disable') : t('btn_enable')}
                           >
-                            {isUserActive ? <Trash2 size={18} className="group-hover/btn:rotate-12 transition-transform" /> : <UserCheck size={18} className="group-hover/btn:scale-110 transition-transform" />}
+                            {isUserActive ? (
+                              <Trash2 size={18} className="group-hover/btn:rotate-12 transition-transform" />
+                            ) : (
+                              <UserCheck size={18} className="group-hover/btn:scale-110 transition-transform" />
+                            )}
                           </button>
                         </div>
                       </td>
