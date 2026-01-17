@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { User, Mail, Shield, Phone, Calendar, Camera, CheckCircle, FileText, Video } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import BackButton from '../components/BackButton';
 
 const Perfil = () => {
+  const { t } = useTranslation('user');
   const [perfil, setPerfil] = useState(null);
 
   return (
@@ -25,14 +27,14 @@ const Perfil = () => {
           </div>
           <div className="pb-4">
             <h1 className="text-3xl font-black text-slate-800 drop-shadow-sm leading-tight">
-              admin1@unab.edu.co
+              correo@unab.edu.co
             </h1>
             <div className="flex gap-2 mt-1">
                <span className="px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-xs font-black uppercase tracking-widest border border-indigo-200">
-                Administrador
+                {t('profile.role_admin')}
               </span>
               <span className={`px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest border ${perfil?.activo ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200'}`}>
-                {perfil?.activo ? 'Cuenta Activa' : 'Cuenta Inactiva'}
+                {perfil?.activo ? t('profile.status_active') : t('profile.status_inactive')}
               </span>
             </div>
           </div>
@@ -44,29 +46,29 @@ const Perfil = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white/70 backdrop-blur-xl border border-white/40 rounded-[2.5rem] p-8 shadow-xl">
             <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-3">
-              <FileText className="text-indigo-500" /> Información del Usuario
+              <FileText className="text-indigo-500" /> {t('profile.sections.user_info')}
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <InfoGroup icon={<Mail />} label="Correo Institucional" value="admin1@unab.edu.co" />
-              <InfoGroup icon={<Phone />} label="Teléfono de Contacto" value="314 230 3026" />
-              <InfoGroup icon={<Calendar />} label="Miembro del Centro desde" value="Enero 2024" />
-              <InfoGroup icon={<Shield />} label="Nivel de Acceso" value="Privilegios Globales" />
+              <InfoGroup icon={<Mail />} label={t('profile.labels.email')} value="admin1@unab.edu.co" />
+              <InfoGroup icon={<Phone />} label={t('profile.labels.phone')} value="314 230 3026" />
+              <InfoGroup icon={<Calendar />} label={t('profile.labels.member_since')} value={t('profile.values.member_date')} />
+              <InfoGroup icon={<Shield />} label={t('profile.labels.access_level')} value={t('profile.values.access_type')} />
             </div>
           </div>
 
-          {/* Nueva Sección: Preferencias de Simulación (Basado en Adjunto 2) */}
+          {/* Nueva Sección: Preferencias de Simulación */}
           <div className="bg-white/40 backdrop-blur-md border border-white/20 rounded-[2.5rem] p-8 shadow-lg">
             <h3 className="text-xl font-black text-slate-800 mb-6 flex items-center gap-3 text-opacity-80">
-              <Video className="text-purple-500" /> Preferencias de Escenario
+              <Video className="text-purple-500" /> {t('profile.sections.scenario_preferences')}
             </h3>
             <div className="flex flex-wrap gap-4">
                <div className="flex items-center gap-2 bg-white/50 px-4 py-2 rounded-2xl border border-white/60">
                   <CheckCircle size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold text-slate-600">Autorización para grabar</span> 
+                  <span className="text-sm font-bold text-slate-600">{t('profile.preferences.recording')}</span> 
                </div>
                <div className="flex items-center gap-2 bg-white/50 px-4 py-2 rounded-2xl border border-white/60">
                   <CheckCircle size={16} className="text-emerald-500" />
-                  <span className="text-sm font-bold text-slate-600">Uso compartido de escenarios</span> [cite: 213]
+                  <span className="text-sm font-bold text-slate-600">{t('profile.preferences.sharing')}</span>
                </div>
             </div>
           </div>
@@ -74,8 +76,8 @@ const Perfil = () => {
 
         {/* Columna de Estadísticas */}
         <div className="space-y-6">
-          <StatCard title="Escenarios Creados" value="12" subtitle="Formatos UNAB completos" color="bg-slate-900" />
-          <StatCard title="Simulaciones" value="45" subtitle="Sesiones dirigidas" color="bg-indigo-600" />
+          <StatCard title={t('profile.stats.scenarios_title')} value="12" subtitle={t('profile.stats.scenarios_sub')} color="bg-slate-900" />
+          <StatCard title={t('profile.stats.simulations_title')} value="45" subtitle={t('profile.stats.simulations_sub')} color="bg-indigo-600" />
         </div>
       </div>
     </div>
@@ -94,17 +96,20 @@ const InfoGroup = ({ icon, label, value }) => (
   </div>
 );
 
-const StatCard = ({ title, value, subtitle, color }) => (
-  <div className={`${color} rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group`}>
-    <div className="relative z-10">
-      <p className="text-4xl font-black mb-1">{value}</p>
-      <p className="font-bold text-lg leading-tight">{title}</p>
-      <p className="text-white/60 text-xs mt-2 font-medium italic">{subtitle}</p>
+const StatCard = ({ title, value, subtitle, color }) => {
+  const { t } = useTranslation();
+  return (
+    <div className={`${color} rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden group`}>
+      <div className="relative z-10">
+        <p className="text-4xl font-black mb-1">{value}</p>
+        <p className="font-bold text-lg leading-tight">{title}</p>
+        <p className="text-white/60 text-xs mt-2 font-medium italic">{subtitle}</p>
+      </div>
+      <div className="absolute -bottom-4 -right-4 text-white/10 group-hover:scale-110 transition-transform">
+         <Shield size={120} strokeWidth={1} />
+      </div>
     </div>
-    <div className="absolute -bottom-4 -right-4 text-white/10 group-hover:scale-110 transition-transform">
-       <Shield size={120} strokeWidth={1} />
-    </div>
-  </div>
-);
+  );
+};
 
 export default Perfil;

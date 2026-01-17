@@ -15,7 +15,8 @@
     "phone": "Phone",
     "email": "Email Address",
     "role": "User Role",
-    "actions": "Actions"
+    "actions": "Actions",
+    "back": "Back"
   },
   "placeholders": {
     "search": "Search by name, email, or role",
@@ -37,5 +38,42 @@
     "confirm_disable": "Are you sure you want to disable",
     "success_update_state": "Status updated successfully",
     "success_register": "User registered successfully"
+  },
+
+  "profile": {
+    "role_admin": "Administrator",
+    "status_active": "Active Account",
+    "status_inactive": "Inactive Account",
+    "sections": {
+      "user_info": "User Information",
+      "scenario_preferences": "Scenario Preferences"
+    },
+    "labels": {
+      "email": "Institutional Email",
+      "phone": "Contact Phone",
+      "member_since": "Member since",
+      "access_level": "Access Level"
+    },
+    "values": {
+      "member_date": "January 2024",
+      "access_type": "Global Privileges"
+    },
+    "preferences": {
+      "recording": "Recording Authorization",
+      "sharing": "Scenario shared use"
+    },
+    "stats": {
+      "scenarios_title": "Scenarios Created",
+      "scenarios_sub": "Complete UNAB formats",
+      "simulations_title": "Simulations",
+      "simulations_sub": "Guided sessions"
+    }
+  },
+
+  "auth": {
+    "session_timeout_title": "Are you still there?",
+    "session_timeout_text": "Your session is about to expire due to inactivity.",
+    "stay_logged_in": "Yes, stay logged in",
+    "logout_now": "Log out now"
   }
 }

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; // 1. Importar Hook
 
 const Dashboard = () => {
-  const { t } = useTranslation('scenario'); // 2. Inicializar Namespace 'scenario'
+  const { t } = useTranslation('scenario');
   const [escenarios, setEscenarios] = useState([]);
   const [busqueda, setBusqueda] = useState('');
   const navigate = useNavigate();

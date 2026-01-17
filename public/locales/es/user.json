@@ -15,7 +15,8 @@
     "phone": "Teléfono",
     "email": "Correo Electrónico",
     "role": "Rol de Usuario",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "back": "Atras"
   },
   "placeholders": {
     "search": "Buscar por nombre, correo o rol",
@@ -37,5 +38,42 @@
     "confirm_disable": "¿Estás seguro de desactivar a",
     "success_update_state": "Estado actualizado correctamente",
     "success_register": "Usuario registrado exitosamente"
+  },
+
+  "profile": {
+    "role_admin": "Administrador",
+    "status_active": "Cuenta Activa",
+    "status_inactive": "Cuenta Inactiva",
+    "sections": {
+      "user_info": "Información del Usuario",
+      "scenario_preferences": "Preferencias de Escenario"
+    },
+    "labels": {
+      "email": "Correo Institucional",
+      "phone": "Teléfono de Contacto",
+      "member_since": "Miembro del Centro desde",
+      "access_level": "Nivel de Acceso"
+    },
+    "values": {
+      "member_date": "Enero 2024",
+      "access_type": "Privilegios Globales"
+    },
+    "preferences": {
+      "recording": "Autorización para grabar",
+      "sharing": "Uso compartido de escenarios"
+    },
+    "stats": {
+      "scenarios_title": "Escenarios Creados",
+      "scenarios_sub": "Formatos UNAB completos",
+      "simulations_title": "Simulaciones",
+      "simulations_sub": "Sesiones dirigidas"
+    }
+  },
+
+  "auth": {
+    "session_timeout_title": "¿Sigues ahí?",
+    "session_timeout_text": "Tu sesión está a punto de expirar por inactividad.",
+    "stay_logged_in": "Sí, mantener mi sesión",
+    "logout_now": "Cerrar sesión ahora"
   }
 }

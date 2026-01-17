@@ -49,12 +49,80 @@ const VistaPreviaDialogos = () => {
   // Función para "Testear" (Regenerar y sobreescribir según tu nueva lógica)
   const testearNuevaVersion = async () => {
     setIsRegenerating(true);
+
+    // 1. Iniciar el modal de SweetAlert2 con la barra de progreso
+    Swal.fire({
+      title: t('alerts.generating_dialogue_title'),
+      html: `
+        <div class="mt-4">
+          <div class="flex justify-between text-[10px] font-black text-indigo-600 uppercase mb-1">
+            <span id="gen-text">${t('alerts.ia_analyzing')}</span>
+            <span id="gen-percent">0%</span>
+          </div>
+          <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div id="gen-bar" class="h-full bg-indigo-600 transition-all duration-700 ease-out" style="width: 0%"></div>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-2 italic">${t('alerts.wait_message')}</p>
+        </div>
+      `,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    // Función para actualizar la barra manualmente
+    const updateGenProgress = (percent, text) => {
+      const bar = document.getElementById('gen-bar');
+      const txt = document.getElementById('gen-text');
+      const per = document.getElementById('gen-percent');
+      if (bar) bar.style.width = `${percent}%`;
+      if (txt) txt.innerText = text;
+      if (per) per.innerText = `${percent}%`;
+    };
+
     try {
+      // Simulamos un avance inicial mientras la API responde
+      updateGenProgress(15, t('alerts.connecting_ia'));
+      
+      // Iniciamos un pequeño intervalo para que la barra se mueva lentamente hasta el 90%
+      // Esto da sensación de actividad mientras esperamos la respuesta asíncrona
+      const progressInterval = setInterval(() => {
+        let currentWidth = parseInt(document.getElementById('gen-bar')?.style.width || "0");
+        if (currentWidth < 90) {
+          updateGenProgress(currentWidth + 1, t('alerts.ia_drafting'));
+        }
+      }, 400);
+
+      // LLAMADA A LA API
       await api.get(`/escenarios/generarYGuardarDialogo/${id}`);
-      // Una vez regenerado en el servidor, refrescamos el visor
+      
+      // Una vez la API responde, completamos al 100% y limpiamos intervalo
+      clearInterval(progressInterval);
+      updateGenProgress(100, t('alerts.completed'));
+
+      // Refrescamos el visor
       await fetchDialogo();
+
+      // Cerramos el modal de carga y mostramos el de éxito
+      setTimeout(() => {
+        Swal.fire({
+          title: t('alerts.generation_dialogue_success_title'),
+          text: t('alerts.generation_dialogue_success_text'),
+          icon: 'success',
+          confirmButtonColor: '#4f46e5'
+        });
+      }, 600);
+
     } catch (err) {
-      alert("Error al regenerar diálogos");
+      console.error(err);
+      Swal.fire({
+        title: t('alerts.error_title'),
+        text: t('alerts.generation_error_text'),
+        icon: 'error',
+        confirmButtonColor: '#4f46e5'
+      });
     } finally {
       setIsRegenerating(false);
     }
@@ -74,9 +142,9 @@ const VistaPreviaDialogos = () => {
           </button>
           <div>
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">
-              {t('test_dialogs_title') || "Laboratorio de Diálogos"}
+              {t('dialogs_lab.test_dialogs_title')}
             </h1>
-            <p className="text-slate-500 text-sm font-medium">Escenario ID: #{id}</p>
+            <p className="text-slate-500 text-sm font-medium">{t('dialogs_lab.id_scenario')}: #{id}</p>
           </div>
         </div>
 
@@ -87,7 +155,7 @@ const VistaPreviaDialogos = () => {
             className="flex items-center gap-2 px-6 py-3 bg-white text-brand-indigo border border-brand-indigo/20 rounded-2xl font-bold hover:bg-brand-indigo/5 transition-all disabled:opacity-50"
           >
             {isRegenerating ? <Loader2 className="animate-spin" size={18} /> : <Wand2 size={18} />}
-            {t('btn_regenerate') || "Testear otra versión"}
+            {t('dialogs_lab.btn_regenerate')}
           </button>
 
           <a 
@@ -96,7 +164,7 @@ const VistaPreviaDialogos = () => {
             className="flex items-center gap-2 px-6 py-3 bg-brand-indigo text-white rounded-2xl font-bold shadow-lg shadow-indigo-200 hover:bg-brand-dark transition-all"
           >
             <Download size={18} />
-            {t('btn_download') || "Descargar Oficial"}
+            {t('dialogs_lab.btn_download')}
           </a>
         </div>
       </div>

@@ -13,5 +13,165 @@
   },
   "modal": {
     "title": "Visor Documental GlorIA"
+  },
+  "alerts": {
+
+    "validation_error_title": "Campos Incompletos",
+    "validation_error_text": "Por favor, completa el título y la descripción del escenario antes de generar la propuesta.",
+    
+    "generation_success_title": "¡Propuesta Generada!",
+    "generation_success_text": "Revisa la matriz técnica antes de descargar el PDF.",
+    
+    "generation_error_title": "Error",
+    "generation_error_text": "No se pudo procesar la solicitud con la IA.",
+    
+
+    "error_title": "Error",
+    "ia_error_text": "No se pudo procesar la solicitud con la IA.",
+    "try_again": "GlorIA no pudo generar la respuesta. Por favor, inténtalo de nuevo.",
+
+    "saving_title": "Procesando Escenario",
+    "preparing_pdf": "Preparando datos...",
+    "generating_pdf_file": "Generando documento PDF...",
+    "downloading_local": "Iniciando descarga...",
+    "uploading_server": "Guardando en el servidor UNAB...",
+    "completed": "¡Todo listo!",
+    "process_completed_title": "¡Éxito!",
+    "process_completed_text": "PDF descargado y guardado en el sistema correctamente.",
+
+    "duplicate_title": "Título Duplicado",
+    "duplicate_text": "Ya existe un escenario con este título en tu sistema. Por favor, elige un nombre diferente.",
+    "save_error_text": "Hubo un error al intentar guardar el archivo en el servidor.",
+
+    "generating_dialogue_title": "Generando Diálogo",
+    "ia_analyzing": "GlorIA está analizando...",
+    "connecting_ia": "Conectando con el servidor...",
+    "ia_drafting": "Diseñando el guion pedagógico...",
+    "wait_message": "Este proceso suele tardar de 20 a 40 segundos.",
+    "generation_diaolgue_success_title": "¡Diálogo Creado!",
+    "generation_diaolgue_success_text": "Los diálogos y respuestas de los avatares se han actualizado correctamente."
+    
+  },
+
+  "preview": {
+    "generated_by": "Escenario Generado por GlorIA",
+    "buttons": {
+      "adjust": "AJUSTAR",
+      "finish_save": "FINALIZAR Y GUARDAR"
+    },
+    "sections": {
+      "description": "Descripción del escenario",
+      "objectives": "Objetivos y resultados de aprendizaje",
+      "behaviors_knowledge_title": "Comportamientos y conocimientos",
+      "behaviors_knowledge_desc": "En una simulación exitosa, el participante deberá evidenciar:",
+      "content_title": "2. Contenido",
+      "content_desc": "Contenido académico y actitudes de los avatares:",
+      "environment_title": "3. Escenario",
+      "characters_title": "4. Personajes",
+      "feedback_alignment": "4. Retroalimentación y alineación"
+    },
+    "questions": {
+      "pre_simulation": "¿Qué debe saber el participante antes de la simulación?",
+      "previous_knowledge": "¿Qué conocimientos debe tener el participante antes?",
+      "during_simulation": "¿Qué debe suceder durante la simulación?",
+      "end_simulation": "¿Cuándo y cómo debería terminar?",
+      "feedback_type": "¿Tipo de retroalimentación del docente?",
+      "post_simulation": "¿Qué debe hacer el participante después?"
+    },
+    "labels": {
+      "adults": "Adultos",
+      "children_youth": "Niños / Jóvenes",
+      "difficulty": "Dificultad",
+      "general": "General",
+      "example_tag": "EJEMPLO",
+      "alert_tag": "ALERTA",
+      "no_plan": "Sin plan definido"
+    },
+    "matrix": {
+      "embedded_actions": "Acciones embebidas en la simulación",
+      "embedded_desc": "Acciones específicas que deben ocurrir al menos una vez.",
+      "positive_title": "Comportamientos Positivos (Aciertos)",
+      "negative_title": "Comportamientos problemáticos (Desaciertos)",
+      "no_data": "No hay datos de comportamiento disponibles.",
+      "no_error_data": "No se detectaron matrices de error.",
+      "table": {
+        "objective": "Objetivo Pedagógico",
+        "trigger_student": "Activador (Alumno)",
+        "pos_response": "Respuesta Positiva (Avatar)",
+        "neg_response": "Respuesta Negativa (Avatar)",
+        "example": "Ejemplo Práctico",
+        "trigger_error": "Activador (Error)",
+        "hostile_reaction": "Reacción Hostil (Avatar)",
+        "recovery_plan": "Plan de Recuperación",
+        "example_fail": "Ejemplo de Fallo"
+      }
+    },
+    "sidebar": {
+      "avatar_profiles": "Perfiles de Avatares",
+      "feedback_guide": "Guía de Retroalimentación"
+    }
+  },
+
+  "dialogs_lab": {
+    "id_scenario": "ID del Escenario",
+    "test_dialogs_title": "Laboratorio de Diálogos",
+    "btn_regenerate": "Testear otra versión",
+    "btn_download": "Descargar Oficial"
+  },
+
+  "common": {
+    "back": "Regresar",
+    "next": "Siguiente"
+  },
+  "languages": {
+    "spanish": "Español",
+    "english": "Inglés"
+  },
+  "create": {
+    "main_title": "Crear Nuevo Escenario",
+    "subtitle": "Diseña la base pedagógica para la IA GlorIA",
+    "step1": {
+      "label": "Paso 1: Información Base",
+      "pedagogical_objectives": "Objetivos Pedagógicos",
+      "placeholders": {
+        "title": "Título del escenario",
+        "authors": "Autores",
+        "area": "Área académica",
+        "minutes": "Minutos",
+        "role": "Rol aprendiz",
+        "description": "Describe brevemente el conflicto principal...",
+        "objective": "Objetivo (ej: Comunicar propósito)",
+        "result": "Resultado esperado"
+      }
+    },
+    "step2": {
+      "label": "Paso 2: Avatares Sugeridos",
+      "add_btn": "+ Nuevo",
+      "placeholders": {
+        "name": "Nombre o Cargo del Avatar",
+        "attitude": "Actitud (Ej: Hostil)",
+        "secret": "¿Qué información oculta o defiende este avatar?"
+      }
+    },
+    "step3": {
+      "label": "Paso 3: Disparador Inicial",
+      "input_label": "Frase que inicia el diálogo",
+      "placeholders": {
+        "trigger": "Ej: 'Buenos días, he venido a proponer...'",
+        "reaction": "Describe la reacción inicial que esperas..."
+      }
+    },
+    "loading": {
+      "text": "GlorIA está analizando y redactando..."
+    },
+    "buttons": {
+      "design_proposal": "Diseñar Propuesta"
+    },
+    "sidebar": {
+      "title": "Asistente GlorIA",
+      "description": "Al procesar los datos, crearé las tablas de comportamientos, activadores y planes de recuperación siguiendo los lineamientos pedagógicos de la UNAB.",
+      "footer": "Formato PDF Oficial"
+    }
   }
+
 }
