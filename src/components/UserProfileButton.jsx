@@ -2,10 +2,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from 'lucide-react';
 import UserService from '../service/UserService';
+import { useTranslation } from 'react-i18next';
 
 const UserProfileButton = () => {
   const navigate = useNavigate();
   const rol = UserService.getRole();
+  const { t } = useTranslation('user');
+
 
   return (
     <button 
@@ -20,7 +23,7 @@ const UserProfileButton = () => {
       {/* Texto descriptivo */}
       <div className="flex flex-col text-left">
         <span className="text-xs font-black text-slate-800 uppercase tracking-tighter">
-          Mi Perfil
+          {t('my_profile')}
         </span>
         <span className="text-[10px] font-bold text-brand-indigo/70 uppercase">
           {rol === 'ROLE_ADMIN' ? 'Admin' : 'User'}
