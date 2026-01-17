@@ -2,6 +2,8 @@
   "title": "User Management",
   "sub_title": "Manage roles and access to the GlorIA ecosystem",
   "btn_new": "New User",
+  "btn_edit": "Edit User",
+  "my_profile": "My Profile",
   "title_edit": "Edit User Profile",
   "subtitle_edit": "Update credentials and system access level.",
   "role_admin": "Administrator",
@@ -15,8 +17,11 @@
     "phone": "Phone",
     "email": "Email Address",
     "role": "User Role",
+    "status": "Status",
     "actions": "Actions",
-    "back": "Back"
+    "back": "Back",
+    "status_active": "Active",
+    "status_inactive": "Inactive"
   },
   "placeholders": {
     "search": "Search by name, email, or role",
