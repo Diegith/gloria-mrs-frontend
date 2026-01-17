@@ -40,8 +40,6 @@ const Usuarios = () => {
     fetchUsuarios();
   }, []);
 
-  console.log("Usuarios cargados:", usuarios);
-  // Optimización: Filtrado con useMemo
   const usuariosFiltrados = useMemo(() => {
     return usuarios.filter(user =>
       user.nombre?.toLowerCase().includes(busqueda.toLowerCase())
