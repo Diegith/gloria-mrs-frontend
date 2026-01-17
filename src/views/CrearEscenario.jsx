@@ -38,7 +38,7 @@ const CrearEscenario = () => {
     autores: '', 
     area: '',
     duracion: '',
-    idioma: 'Español',
+    idioma: '',
     rolParticipante: '', 
     descripcionEscenario: '', 
     objetivos: [{ objetivo: '', resultado: '' }],
@@ -83,6 +83,7 @@ const CrearEscenario = () => {
 
   const enviarAGlorIA = async () => {
     // 1. VALIDACIÓN PREVIA
+    console.log("Enviando datos a GlorIA:", formData);
     if (!formData.titulo.trim() || !formData.descripcionEscenario.trim()) {
       Swal.fire(
         t('alerts.validation_error_title'), 
@@ -193,7 +194,10 @@ const CrearEscenario = () => {
       const pdfFile = new File([pdfBlob], `${nuevoTitulo}.pdf`, { type: 'application/pdf' });
       formDataUpload.append('file', pdfFile);
       
-      const metadata = { nombre: nuevoTitulo };
+      const metadata = { 
+        nombre: nuevoTitulo, 
+        idioma: escenarioData.formData.idioma
+      };
       formDataUpload.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
 
       await api.post('escenarios/crear/upload', formDataUpload, {

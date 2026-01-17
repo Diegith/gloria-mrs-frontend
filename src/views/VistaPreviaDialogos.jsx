@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import api from '../api/apiConfig';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -34,7 +35,7 @@ const VistaPreviaDialogos = () => {
       const fileURL = URL.createObjectURL(file);
       setPdfUrl(fileURL);
     } catch (err) {
-      console.error("Error cargando diálogo:", err);
+      
       setError(true);
     } finally {
       setLoading(false);
