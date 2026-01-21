@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/apiConfig';
 import { useTranslation } from 'react-i18next';
+
+import dayjs from 'dayjs'; 
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/es';
+
 import { 
   FileText, 
   FileBarChart, 
@@ -13,6 +18,9 @@ import {
   Search,
   RefreshCw 
 } from 'lucide-react';
+
+dayjs.extend(relativeTime);
+dayjs.locale('es');
 
 const Escenarios = () => {
   const { t } = useTranslation('scenario');
@@ -27,6 +35,12 @@ const Escenarios = () => {
   useEffect(() => {
     fetchEscenarios();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      if (currentPdfUrl) URL.revokeObjectURL(currentPdfUrl);
+    };
+  }, [currentPdfUrl]);
 
   const fetchEscenarios = async () => {
     try {
@@ -127,7 +141,7 @@ const Escenarios = () => {
               <div>
                 <h3 className="font-black text-slate-800 leading-tight">{esc.nombre || 'Sin nombre'}</h3>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                  {t('card.id')}: {esc.id} • {new Date(esc.creadoEn).toLocaleDateString()} • {esc.nombreUsuario}
+                  {t('card.id')}: {esc.id} • {dayjs(esc.creadoEn).format('DD/MM/YYYY')} • {esc.nombreUsuario}
                 </p>
               </div>
             </div>
