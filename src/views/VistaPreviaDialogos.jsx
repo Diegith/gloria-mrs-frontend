@@ -200,13 +200,13 @@ const VistaPreviaDialogos = () => {
         <div className="p-6 bg-indigo-600 rounded-[2rem] text-white flex items-center gap-6 shadow-xl shadow-indigo-100">
           <MessageSquareQuote size={40} className="opacity-50" />
           <p className="text-sm font-medium leading-relaxed">
-            <b>Nota Pedagógica:</b> Los diálogos son generados basándose en el "Prompt Maestro". Si los resultados no son los esperados, puedes regenerar la versión para obtener variaciones en la actitud de los avatares.
+            <b>{t('pedagogica_nota_title')}:</b> {t('pedagogica_nota_text')}
           </p>
         </div>
         <div className="p-6 bg-white rounded-[2rem] border border-slate-100 flex items-center gap-6 shadow-sm">
           <FileCheck size={40} className="text-emerald-500 opacity-50" />
           <p className="text-sm text-slate-600 font-medium">
-            Esta versión de diálogos es <b>idempotente</b>. Al guardar una nueva versión, el archivo anterior será reemplazado para mantener la integridad del escenario.
+            {t('idempotente_text_part1')} <b>{t('idempotente_word')}</b>. {t('idempotente_text_part2')}
           </p>
         </div>
       </div>

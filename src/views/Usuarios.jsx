@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { UserPlus, Edit, Trash2, ShieldCheck, Search, Loader2, UserCheck } from 'lucide-react';
+import { UserPlus, Edit, Trash2, ShieldCheck, Search, Loader2, UserCheck, Mail } from 'lucide-react'; // Añadido Mail para el icono
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 
@@ -19,7 +19,6 @@ const Usuarios = () => {
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
-  // Helper para normalizar el booleano 'activo'
   const parseActivo = (val) => val === true || String(val).toLowerCase() === 'true';
 
   useEffect(() => {
@@ -40,9 +39,12 @@ const Usuarios = () => {
     fetchUsuarios();
   }, []);
 
+  // Adaptado para buscar tanto por correo (nombre) como por nombre real
   const usuariosFiltrados = useMemo(() => {
+    const term = busqueda.toLowerCase();
     return usuarios.filter(user =>
-      user.nombre?.toLowerCase().includes(busqueda.toLowerCase())
+      user.nombre?.toLowerCase().includes(term) || 
+      user.nombreCompleto?.toLowerCase().includes(term)
     );
   }, [usuarios, busqueda]);
 
@@ -51,7 +53,8 @@ const Usuarios = () => {
 
     const result = await MySwal.fire({
       title: nuevoEstado ? t('alerts.confirm_enable') : t('alerts.confirm_disable'),
-      text: user.nombre,
+      // Usamos nombreCompleto para la alerta si está disponible
+      text: user.nombreCompleto || user.nombre,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: t('btn_confirm'),
@@ -140,14 +143,24 @@ const Usuarios = () => {
                       className={`transition-all duration-300 ${!isUserActive ? 'bg-slate-100/40 opacity-60' : 'hover:bg-white/40'}`}
                     >
                       <td className="p-6">
-                        <div className="flex items-center gap-2">
-                          <div className={`font-bold ${isUserActive ? 'text-slate-800' : 'text-slate-500 italic'}`}>
-                            {user.nombre}
+                        <div className="flex flex-col gap-0.5">
+                          <div className="flex items-center gap-2">
+                            {/* Mostramos nombreCompleto como prioridad */}
+                            <div className={`font-bold ${isUserActive ? 'text-slate-800' : 'text-slate-500 italic'}`}>
+                              {user.nombreCompleto || user.nombre}
+                            </div>
+                            {!isUserActive && (
+                               <span className="px-2 py-0.5 text-[9px] bg-slate-200 text-slate-600 rounded-lg font-black uppercase tracking-widest">
+                                 {t('status_inactive') || 'Inactivo'}
+                               </span>
+                            )}
                           </div>
-                          {!isUserActive && (
-                             <span className="px-2 py-0.5 text-[9px] bg-slate-200 text-slate-600 rounded-lg font-black uppercase tracking-widest">
-                               {t('status_inactive') || 'Inactivo'}
-                             </span>
+                          {/* Subtítulo con el correo si existe nombreCompleto */}
+                          {user.nombreCompleto && (
+                            <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium">
+                              <Mail size={10} />
+                              {user.nombre}
+                            </div>
                           )}
                         </div>
                       </td>
@@ -170,10 +183,10 @@ const Usuarios = () => {
                         }`}>
                           {isUserActive ? t('table.status_active') : t('table.status_inactive')}
                         </span>
-                      </td>                      
+                      </td>                       
                       <td className="p-6 text-right">
                         <div className="flex justify-end gap-2">
-                          <UserProfileButton />
+                          <UserProfileButton user={user}/>
                           <button 
                             onClick={() => navigate(`/update-user/${user.id}`)}
                             className="p-2 bg-white/60 hover:bg-brand-indigo hover:text-white text-slate-600 rounded-xl transition-all shadow-sm"

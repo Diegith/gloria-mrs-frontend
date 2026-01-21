@@ -172,6 +172,13 @@
       "description": "Al procesar los datos, crearé las tablas de comportamientos, activadores y planes de recuperación siguiendo los lineamientos pedagógicos de la UNAB.",
       "footer": "Formato PDF Oficial"
     }
-  }
+  },
+
+  
+  "pedagogica_nota_title": "Nota Pedagógica",
+  "pedagogica_nota_text": "Los diálogos son generados basándose en el \"Prompt Maestro\". Si los resultados no son los esperados, puedes regenerar la versión para obtener variaciones en la actitud de los avatares.",
+  "idempotente_text_part1": "Esta versión de diálogos es",
+  "idempotente_word": "idempotente",
+  "idempotente_text_part2": "Al guardar una nueva versión, el archivo anterior será reemplazado para mantener la integridad del escenario."
 
 }

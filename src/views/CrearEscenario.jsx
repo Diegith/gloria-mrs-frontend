@@ -3,6 +3,7 @@ import { Wand2, Users, BookOpen, MessageSquare, Loader2, FileDown, Plus, Trash2,
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useTranslation } from 'react-i18next'; 
+import { useNavigate } from 'react-router-dom';
 
 const CrearEscenario = () => {
   const [paso, setPaso] = useState(1);
@@ -11,7 +12,8 @@ const CrearEscenario = () => {
   const [vistaPrevia, setVistaPrevia] = useState(false);
   const [escenarioData, setEscenarioData] = useState(null);
   const [escenarios, setEscenarios] = useState([]);
-
+  const navigate = useNavigate();
+  
   const { t } = useTranslation('scenario');
   
   const api = axios.create({
@@ -26,12 +28,17 @@ const CrearEscenario = () => {
 
   const fetchEscenarios = async () => {
     try {
-      const res = await api.get('/escenarios/listar');
-      setEscenarios(res.data);
-    } catch (err) {
-      console.error("Error al cargar escenarios", err);
+        const token = localStorage.getItem('token'); // Recuperar el token
+        const response = await api.get('escenarios/listar', {
+            headers: {
+                'Authorization': `Bearer ${token}` // ¡Esto es lo que falta!
+            }
+        });
+        setEscenarios(response.data);
+    } catch (error) {
+        console.error("Error al cargar escenarios", error);
     }
-  };
+};
 
   const [formData, setFormData] = useState({
     titulo: '',
@@ -82,8 +89,6 @@ const CrearEscenario = () => {
   };
 
   const enviarAGlorIA = async () => {
-    // 1. VALIDACIÓN PREVIA
-    console.log("Enviando datos a GlorIA:", formData);
     if (!formData.titulo.trim() || !formData.descripcionEscenario.trim()) {
       Swal.fire(
         t('alerts.validation_error_title'), 
@@ -122,9 +127,19 @@ const CrearEscenario = () => {
 
     const nuevoTitulo = escenarioData.formData.titulo.trim();
 
-    // 1. VALIDACIÓN DE DUPLICADOS (Usa la lista 'escenarios' obtenida de fetchEscenarios)
+    let escenariosFrescos = [];
+
+    try {
+        const res = await api.get('escenarios/listar', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        escenariosFrescos = res.data; 
+    } catch (err) {
+        console.error("Error consultando duplicados", err);
+    }
+
     const existeDuplicado = escenarios.some(
-      (esc) => esc.nombre.toLowerCase() === nuevoTitulo.toLowerCase()
+      (esc) => esc && esc.nombre && esc.nombre.trim().toLowerCase() === nuevoTitulo.toLowerCase()
     );
 
     if (existeDuplicado) {
@@ -182,7 +197,7 @@ const CrearEscenario = () => {
       const url = window.URL.createObjectURL(pdfBlob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', `Guion_${nuevoTitulo}.pdf`);
+      link.setAttribute('download', `Escenario_${nuevoTitulo}.pdf`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -221,6 +236,11 @@ const CrearEscenario = () => {
           text: t('alerts.process_completed_text'),
           icon: 'success',
           confirmButtonColor: '#4f46e5'
+        }).then((result) => {
+          // Si el usuario presiona el botón o cierra la alerta
+          if (result.isConfirmed || result.isDismissed) {
+            navigate('/escenarios'); // Redirección a la vista de escenarios
+          }
         });
       }, 600);
 
@@ -283,7 +303,7 @@ const CrearEscenario = () => {
             <section className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
               <h3 className="text-green-600 font-black text-xs uppercase mb-4 tracking-widest">{t('preview.sections.content_title')}</h3>
               <p className="text-s text-gray-700 mt-1">{t('preview.sections.content_desc')}</p>
-              <div className="space-y-4">               
+              <div className="space-y-4"> 
                   <div className="p-4 bg-green-50/50 rounded-2xl border-l-4 border-green-500">
                     <p className="text-sm font-bold text-slate-800">{escenarioData.formData.contenido}</p>
                   </div>
@@ -295,7 +315,7 @@ const CrearEscenario = () => {
               <div className="space-y-4">
                 {escenarioData.formData.escenarios.map((e, i) => (
                   <div key={i} className="p-4 bg-green-50/50 rounded-2xl border-l-4 border-green-500">
-                    <p className="text-sm font-bold text-slate-800">{e.escenario}</p>                    
+                    <p className="text-sm font-bold text-slate-800">{e.escenario}</p>
                   </div>
                 ))}
                 <p className="text-xs text-gray-700 mt-1 italic">{t('preview.questions.pre_simulation')}</p>
@@ -322,7 +342,7 @@ const CrearEscenario = () => {
                 <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.personajesNinosJovenes}</p>
 
                 <p className="text-xs text-gray-700 mt-1 italic">{t('preview.labels.difficulty')}</p>
-                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.dificultad}</p>                
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.dificultad}</p> 
               </div>
             </section>
             
@@ -333,7 +353,7 @@ const CrearEscenario = () => {
                 <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.retroalimentacionDocente}</p>
 
                 <p className="text-xs text-gray-700 mt-1 italic">{t('preview.questions.post_simulation')}</p>
-                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.accionesPostSimulacion}</p>              
+                <p className="text-xs text-green-700 mt-1 italic">{escenarioData.formData.accionesPostSimulacion}</p>
               </div>
             </section>
 

@@ -10,7 +10,8 @@ import {
   Shield, 
   ArrowLeft, 
   Loader2, 
-  UserCircle 
+  UserCircle,
+  User // Añadido para el icono de nombre completo
 } from 'lucide-react';
 
 const UpdateUser = () => {
@@ -22,7 +23,8 @@ const UpdateUser = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [userData, setUserData] = useState({
     id: '',
-    nombre: '',
+    nombre: '',          // Correo / Login
+    nombreCompleto: '',  // Nuevo: Nombre Real
     contrasena: '',
     telefono: '',
     rol: ''
@@ -38,6 +40,7 @@ const UpdateUser = () => {
         setUserData({
           id: data.id || userId,
           nombre: data.nombre || '',
+          nombreCompleto: data.nombreCompleto || '', // Carga el nombre real desde el backend
           contrasena: '', 
           telefono: data.telefono || '',
           rol: data.rol || ''
@@ -61,7 +64,8 @@ const UpdateUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!userData.nombre || !userData.rol) {
+    // Validación actualizada incluyendo nombreCompleto
+    if (!userData.nombre || !userData.nombreCompleto || !userData.rol) {
       alert(t('alerts.required_fields'));
       return;
     }
@@ -106,6 +110,22 @@ const UpdateUser = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white/30 backdrop-blur-xl border border-white/60 p-8 rounded-[2.5rem] shadow-2xl space-y-6">
+        
+        {/* Nombre Real (Nuevo campo en la vista de edición) */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-black text-slate-700 uppercase tracking-wider ml-1">
+            <User size={16} className="text-brand-indigo" /> {t('table.name') || 'Nombre Completo'}
+          </label>
+          <input 
+            type="text" 
+            name="nombreCompleto" 
+            value={userData.nombreCompleto} 
+            onChange={handleInputChange} 
+            className="w-full p-4 bg-white/50 border border-white/80 rounded-2xl outline-none focus:ring-4 focus:ring-brand-indigo/10 transition-all font-medium text-slate-700"
+            required
+          />
+        </div>
+
         {/* Email */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-black text-slate-700 uppercase tracking-wider ml-1">

@@ -11,7 +11,8 @@ import {
   ArrowLeft, 
   Loader2, 
   UserCircle,
-  Lock
+  Lock,
+  User // Nuevo icono para el nombre real
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 
@@ -21,10 +22,11 @@ const RegisterUser = () => {
 
   const [isRegistering, setIsRegistering] = useState(false);
   const [userData, setUserData] = useState({
-    nombre: '',
+    nombre: '',           // Correo / Login
+    nombreCompleto: '',   // Nuevo: Nombre Real
     contrasena: '',
     telefono: '',
-    rol: 'ROLE_USER' // Valor inicial por defecto
+    rol: 'ROLE_USER' 
   });
 
   const handleInputChange = (e) => {
@@ -35,8 +37,8 @@ const RegisterUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validación básica
-    if (!userData.nombre || !userData.contrasena || !userData.rol) {
+    // Validación básica incluyendo el nuevo campo
+    if (!userData.nombre || !userData.nombreCompleto || !userData.contrasena || !userData.rol) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -50,13 +52,12 @@ const RegisterUser = () => {
 
     setIsRegistering(true);
     try {
-      // Llamada al método que ya tienes en UserService.js
       await UserService.registrar(userData);
       
       await Swal.fire({
         icon: 'success',
         title: t('alerts.success_register') || 'Usuario creado',
-        text: `${t('table.name')}: ${userData.nombre}`,
+        text: `${t('table.name')}: ${userData.nombreCompleto}`,
         timer: 2000,
         showConfirmButton: false,
         background: 'rgba(255, 255, 255, 0.9)',
@@ -96,10 +97,25 @@ const RegisterUser = () => {
         </p>
       </div>
 
-      {/* Formulario Estilo Cristal */}
       <form onSubmit={handleSubmit} className="bg-white/30 backdrop-blur-xl border border-white/60 p-8 rounded-[2.5rem] shadow-2xl space-y-6">
         
-        {/* Email / Nombre */}
+        {/* Nombre Real (Nuevo Campo Prioritario) */}
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 text-sm font-black text-slate-700 uppercase tracking-wider ml-1">
+            <User size={16} className="text-brand-indigo" /> {t('table.name') || 'Nombre Completo'}
+          </label>
+          <input 
+            type="text" 
+            name="nombreCompleto" 
+            placeholder="Ej: Nombre Completo"
+            value={userData.nombreCompleto} 
+            onChange={handleInputChange} 
+            className="w-full p-4 bg-white/50 border border-white/80 rounded-2xl outline-none focus:ring-4 focus:ring-brand-indigo/10 transition-all font-medium text-slate-700"
+            required
+          />
+        </div>
+
+        {/* Email / Nombre (Login) */}
         <div className="space-y-2">
           <label className="flex items-center gap-2 text-sm font-black text-slate-700 uppercase tracking-wider ml-1">
             <Mail size={16} className="text-brand-indigo" /> {t('table.email')}

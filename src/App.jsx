@@ -67,7 +67,7 @@ function App() {
             </PrivateRoute>
           } 
         />
-        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/perfil/:id" element={<Perfil />} />
 
         <Route path="/crear-usuario" element={<RegisterUser />} />
 
