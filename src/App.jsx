@@ -11,8 +11,16 @@ import NotFound from './views/NotFound';
 import AutoLogout from './components/AutoLogout';
 import Perfil from './views/Perfil';
 import VistaPreviaDialogos from './views/VistaPreviaDialogos';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
-// Componente para proteger rutas
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+// Establecer Bogotá como zona horaria predeterminada en el frontend
+dayjs.tz.setDefault("America/Bogota");
+
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
   return token ? children : <Navigate to="/login" />;
