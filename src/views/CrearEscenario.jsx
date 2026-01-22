@@ -136,9 +136,10 @@ const CrearEscenario = () => {
         escenariosFrescos = res.data; 
     } catch (err) {
         console.error("Error consultando duplicados", err);
+        escenariosFrescos = [];
     }
 
-    const existeDuplicado = escenarios.some(
+    const existeDuplicado = escenariosFrescos.some(
       (esc) => esc && esc.nombre && esc.nombre.trim().toLowerCase() === nuevoTitulo.toLowerCase()
     );
 
