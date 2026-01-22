@@ -1,12 +1,16 @@
 import axios from 'axios';
 
-// Creamos la instancia centralizada
+const isProduction = window.location.hostname !== 'localhost';
+
 const api = axios.create({
-  //baseURL: 'http://localhost:8080', // La URL donde corre tu Spring Boot
-  baseURL: 'https://mursionassistantunab-api.onrender.com', // La URL donde corre tu Spring Boot
+  baseURL: isProduction 
+    ? 'https://mursionassistantunab-api.onrender.com' 
+    : 'http://localhost:8080', 
   headers: {
     'Content-Type': 'application/json',
   },
+  // 120 segundos es el estándar ideal para procesos de IA
+  timeout: 120000,
 });
 
 // INTERCEPTOR: Se ejecuta antes de enviar cualquier petición al servidor
