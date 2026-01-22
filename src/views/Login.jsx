@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import api from '../api/apiConfig';
-import { Lock, User, Info, Loader2 } from 'lucide-react';
-import logoUnab from '../assets/logo_UNAB.png'; // Asegúrate de que la ruta sea correcta
+// Importamos Eye y EyeOff
+import { Lock, User, Info, Loader2, Eye, EyeOff } from 'lucide-react'; 
+import logoUnab from '../assets/logo_UNAB.png';
 
 const Login = () => {
   const [datos, setDatos] = useState({ nombre: '', contrasena: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // Nuevo estado para la visibilidad
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     setDatos({ ...datos, [e.target.name]: e.target.value });
@@ -35,26 +38,21 @@ const Login = () => {
         
         {/* Lado Izquierdo: Branding UNAB */}
         <div className="md:w-[45%] bg-gradient-to-br from-[#3B82F680] to-[#003d6b] p-12 text-white flex flex-col justify-center relative overflow-hidden">
-          {/* Círculos decorativos de fondo para profundidad */}
           <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-400/10 rounded-full blur-3xl"></div>
 
           <div className="relative z-10">
-            {/* Contenedor del Logo con Glassmorphism */}
             <div className="mb-10 bg-white/10 backdrop-blur-md p-5 rounded-2xl border border-white/20 inline-block shadow-xl">
               <img 
                 src={logoUnab} 
                 alt="Logo UNAB" 
-                className="h-70 w-auto object-contain brightness-0 invert" // Mantiene el logo en blanco para el fondo oscuro
+                className="h-70 w-auto object-contain brightness-0 invert" 
               />
             </div>
-
             <h1 className="text-5xl font-black mb-4 tracking-tighter">GlorIA</h1>
-            
             <p className="text-blue-100 text-lg font-medium leading-relaxed opacity-90">
               Sistema Inteligente de Gestión de Escenarios de Realidad Mixta.
             </p>
-
             <div className="mt-12 flex items-center gap-3 text-xs font-bold text-blue-200 bg-white/5 w-fit p-3 rounded-xl border border-white/10">
               <Info size={18} />
               <span className="uppercase tracking-widest">Acceso exclusivo UNAB</span>
@@ -93,12 +91,21 @@ const Login = () => {
                 <Lock className="absolute left-4 top-3.5 text-slate-400 group-focus-within:text-[#005696] transition-colors" size={20} />
                 <input
                   name="contrasena"
-                  type="password"
+                  // Cambiamos el tipo dinámicamente
+                  type={showPassword ? "text" : "password"} 
                   required
                   onChange={handleChange}
-                  className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-[#005696] outline-none transition-all font-bold text-slate-700 placeholder:font-medium"
+                  className="w-full pl-12 pr-12 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-[#005696] outline-none transition-all font-bold text-slate-700 placeholder:font-medium"
                   placeholder="••••••••"
                 />
+                {/* Botón para alternar visibilidad */}
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3.5 text-slate-400 hover:text-[#005696] transition-colors focus:outline-none"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
             </div>
 
