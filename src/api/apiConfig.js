@@ -1,16 +1,11 @@
 import axios from 'axios';
 
-const isProduction = window.location.hostname !== 'localhost';
-
 const api = axios.create({
-  baseURL: isProduction 
-    ? 'https://mursionassistantunab-api.onrender.com' 
-    : 'http://localhost:8080', 
+  baseURL: 'https://mursionassistantunab-api.onrender.com', 
   headers: {
     'Content-Type': 'application/json',
   },
-  // 120 segundos es el estándar ideal para procesos de IA
-  timeout: 120000,
+  timeout: 120000, 
 });
 
 // INTERCEPTOR: Se ejecuta antes de enviar cualquier petición al servidor
