@@ -1,0 +1,14 @@
+{
+  "alerts": {
+    "generating_dialogue_title": "Generating AI Dialogue",
+    "ia_analyzing": "ANALYZING CONTEXT...",
+    "wait_message": "We are orchestrating a new proposal. This may take a few seconds...",
+    "connecting_ia": "CONNECTING TO GEMINI...",
+    "ia_drafting": "DRAFTING SCRIPT...",
+    "completed": "COMPLETED!",
+    "generation_diaolgue_success_title": "New Version Ready!",
+    "generation_dialogue_success_text": "The dialogue lab has been updated with the new generated proposal.",
+    "error_title": "Generation Error",
+    "generation_error_text": "Could not connect to the AI engine. Please try again."
+  }
+}

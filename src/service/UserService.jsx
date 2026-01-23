@@ -119,10 +119,6 @@ static logout() {
     return this._request('get', `usuarios/detalle/${userId}`); 
   }
 
-  static datosUsuario(userId) { 
-    return this._request('get', `usuarios/datosUsuario/${userId}`); 
-  }
-
   static verPerfil() { 
     return this._request('get', 'usuarios/verPerfil'); 
   }

@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://mursionassistantunab-api.onrender.com', 
+  //baseURL: 'https://mursionassistantunab-api.onrender.com', 
+  baseURL: 'http://localhost:8080',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -24,16 +25,11 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// INTERCEPTOR: Manejo de respuestas (Opcional pero recomendado)
+// INTERCEPTOR: Se ejecuta al recibir cualquier respuesta del servidor
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Si el servidor responde 403 (Prohibido) o 401 (No autorizado)
     if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Podríamos limpiar el storage y redirigir al login si el token expiró
-      // localStorage.clear();
-      // window.location.href = '/login';
     }
     return Promise.reject(error);
   }

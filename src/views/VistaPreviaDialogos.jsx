@@ -15,7 +15,7 @@ import {
 
 const VistaPreviaDialogos = () => {
   const { id } = useParams(); // ID del Escenario
-  const { t } = useTranslation('scenario');
+  const { t } = useTranslation('dialogues');
   const navigate = useNavigate();
   
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -109,7 +109,7 @@ const VistaPreviaDialogos = () => {
       // Cerramos el modal de carga y mostramos el de éxito
       setTimeout(() => {
         Swal.fire({
-          title: t('alerts.generation_dialogue_success_title'),
+          title: t('alerts.generation_diaolgue_success_title'),
           text: t('alerts.generation_dialogue_success_text'),
           icon: 'success',
           confirmButtonColor: '#4f46e5'

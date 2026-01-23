@@ -1,0 +1,14 @@
+{
+  "alerts": {
+    "generating_dialogue_title": "Generando Nuevo Diálogo IA",
+    "ia_analyzing": "ANALIZANDO CONTEXTO...",
+    "wait_message": "Estamos orquestando una nueva propuesta. Esto puede tomar unos segundos...",
+    "connecting_ia": "CONECTANDO CON GEMINI...",
+    "ia_drafting": "REDACTANDO GUION...",
+    "completed": "¡COMPLETADO!",
+    "generation_diaolgue_success_title": "¡Nueva Versión Lista!",
+    "generation_dialogue_success_text": "El laboratorio de diálogos se ha actualizado con la nueva propuesta generada.",
+    "error_title": "Error de Generación",
+    "generation_error_text": "No se pudo conectar con el motor de IA. Por favor intenta nuevamente."
+  }
+}

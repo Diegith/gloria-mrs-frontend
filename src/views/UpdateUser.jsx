@@ -34,7 +34,7 @@ const UpdateUser = () => {
     const fetchUserData = async () => {
       try {
         if (!userId) return;
-        const response = await UserService.datosUsuario(userId);
+        const response = await UserService.detalle(userId);
         const data = response.user || response;
 
         setUserData({

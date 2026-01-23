@@ -26,7 +26,7 @@
   "placeholders": {
     "search": "Search by name, email, or role",
     "password": "Leave blank to keep current",
-    "loading_text": "Syncing with GlorIA..."
+    "loading_text": "Loading users..."
   },
   "btn_delete": "Delete User",
   "btn_confirm": "Yes, deactivate",

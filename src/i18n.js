@@ -12,7 +12,7 @@ i18n
     load: 'languageOnly',
     //debug: true, // pruebas en Vercel
     
-    ns: ['layout', 'scenario', 'user'], 
+    ns: ['layout', 'scenario', 'user', 'dashboard', 'dialogues'], 
     defaultNS: 'layout', 
     
     interpolation: {

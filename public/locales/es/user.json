@@ -27,7 +27,7 @@
   "placeholders": {
     "search": "Buscar por nombre, correo o rol",
     "password": "Dejar en blanco para mantener actual",
-    "loading_text": "Sincronizando con GlorIA..."
+    "loading_text": "Cargando usuarios..."
   },
   "btn_delete": "Eliminar Usuario",
   "btn_confirm": "Sí, desactivar",

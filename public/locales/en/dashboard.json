@@ -1,0 +1,23 @@
+{
+  "title": "Scenario Repository",
+  "subtitle": "Manage your recent simulations",
+  "btn_new": "New Scenario",
+  "search_placeholder": "Search recent...",
+  "recent_scenarios": "Recently Added",
+  "view_all": "View full library",
+  "no_data": "Loading recent scenarios...",
+  "card": {
+    "no_title": "Untitled",
+    "ia_ready": "GlorIA MRS",
+    "manage": "DIALOGUES",
+    "view_pdf_tooltip": "View Scenario PDF",
+    "view_report_tooltip": "View General Report",
+    "go_to_lab_tooltip": "Go to Dialog Lab"
+  },
+  "modal": {
+    "title": "Document Viewer"
+  },
+  "errors": {
+    "file_not_available": "The requested file is not available."
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "title": "Repositorio de Escenarios",
+  "subtitle": "Gestiona tus simulaciones recientes",
+  "btn_new": "Nuevo Escenario",
+  "search_placeholder": "Buscar en recientes...",
+  "recent_scenarios": "Agregados Recientemente",
+  "view_all": "Ver biblioteca completa",
+  "no_data": "Cargando escenarios recientes...",
+  "card": {
+    "no_title": "Sin título",
+    "ia_ready": "GlorIA MRS",
+    "manage": "DIÁLOGOS",
+    "view_pdf_tooltip": "Ver PDF Escenario",
+    "view_report_tooltip": "Ver Reporte General",
+    "go_to_lab_tooltip": "Ir al Laboratorio de Diálogos"
+  },
+  "modal": {
+    "title": "Visor de Documentos"
+  },
+  "errors": {
+    "file_not_available": "El archivo solicitado no está disponible."
+  }
+}

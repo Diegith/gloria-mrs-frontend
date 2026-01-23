@@ -24,8 +24,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://mursionassistantunab-api.onrender.com',
-        //target: 'http://localhost:8080',
+        //target: 'https://mursionassistantunab-api.onrender.com',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
         rewrite: p => p.replace(/^\/api/, ''), // "/api/login" -> "/login"
