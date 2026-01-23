@@ -139,9 +139,9 @@ const CrearEscenario = () => {
         escenariosFrescos = [];
     }
 
-    const existeDuplicado = escenariosFrescos.some(
-      (esc) => esc && esc.nombre && esc.nombre.trim().toLowerCase() === nuevoTitulo.toLowerCase()
-    );
+    const existeDuplicado = Array.isArray(escenariosFrescos) 
+      ? escenariosFrescos.some((esc) => esc?.nombre?.trim().toLowerCase() === nuevoTitulo.toLowerCase())
+      : false;
 
     if (existeDuplicado) {
       return Swal.fire({
