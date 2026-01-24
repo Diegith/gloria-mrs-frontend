@@ -10,5 +10,32 @@
     "generation_dialogue_success_text": "El laboratorio de diálogos se ha actualizado con la nueva propuesta generada.",
     "error_title": "Error de Generación",
     "generation_error_text": "No se pudo conectar con el motor de IA. Por favor intenta nuevamente."
-  }
+  },
+
+    "dialogs_lab": {
+    "id_scenario": "ID del Escenario",
+    "test_dialogs_title": "Laboratorio de Diálogos",
+    "btn_regenerate": "Testear otra versión",
+    "btn_download": "Descargar Oficial",
+    "btn_generarte_dialogue": "Generar Diálogo"
+  },
+
+  "preview": {
+    "loading": { "technical_script": "Cargando Guion Técnico..." },
+    "errors": {
+      "not_found_title": "No se encontró el Diálogo",
+      "not_found_desc": "Aún no has generado una versión para este escenario. Usa el botón superior para crear una."
+    },
+    "buttons": { "generate_now": "Generar Ahora" },
+    "labels": { "pdf_viewer": "Visor de Diálogos IA" }
+  },
+
+  "generating_dialogue_title": "Generando Diálogo",
+  "ia_analyzing": "GlorIA está analizando...",
+  "connecting_ia": "Conectando con el servidor...",
+  "ia_drafting": "Diseñando el guion pedagógico...",
+  "wait_message": "Este proceso suele tardar de 20 a 40 segundos.",
+  "generation_diaolgue_success_title": "¡Diálogo Creado!",
+  "generation_diaolgue_success_text": "Los diálogos y respuestas de los avatares se han actualizado correctamente."
+    
 }

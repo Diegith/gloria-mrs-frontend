@@ -175,16 +175,16 @@ const VistaPreviaDialogos = () => {
         {loading ? (
           <div className="flex flex-col items-center gap-3">
             <Loader2 className="animate-spin text-brand-indigo" size={48} />
-            <p className="font-bold text-slate-500">Cargando Guion Técnico...</p>
+            <p className="font-bold text-slate-500">{t('preview.loading.technical_script')}</p>
           </div>
         ) : error ? (
           <div className="text-center space-y-4 p-8">
             <div className="bg-red-100 text-red-500 p-4 rounded-full w-fit mx-auto">
               <AlertCircle size={40} />
             </div>
-            <h3 className="text-xl font-bold text-slate-800">No se encontró el Diálogo</h3>
-            <p className="text-slate-500 max-w-xs">Aún no has generado una versión para este escenario. Usa el botón superior para crear una.</p>
-            <button onClick={testearNuevaVersion} className="px-8 py-3 bg-brand-indigo text-white rounded-xl font-bold">Generar Ahora</button>
+            <h3 className="text-xl font-bold text-slate-800">{t('preview.errors.not_found_title')}</h3>
+            <p className="text-slate-500 max-w-xs">{t('preview.errors.not_found_desc')}</p>
+            <button onClick={testearNuevaVersion} className="px-8 py-3 bg-brand-indigo text-white rounded-xl font-bold">{t('preview.buttons.generate_now')}</button>
           </div>
         ) : (
           <iframe 

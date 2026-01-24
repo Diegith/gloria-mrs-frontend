@@ -10,5 +10,30 @@
     "generation_dialogue_success_text": "The dialogue lab has been updated with the new generated proposal.",
     "error_title": "Generation Error",
     "generation_error_text": "Could not connect to the AI engine. Please try again."
-  }
+  },
+    "dialogs_lab": {
+    "id_scenario": "Scenario ID",
+    "test_dialogs_title": "Dialogue Laboratory",
+    "btn_regenerate": "Test Another Version",
+    "btn_download": "Download Official",
+    "btn_generarte_dialogue": "Generate Dialogue"
+  },
+
+  
+  "preview": {
+    "loading": { "technical_script": "Loading Technical Script..." },
+    "errors": {
+      "not_found_title": "Dialogue Not Found",
+      "not_found_desc": "You haven't generated a version for this scenario yet. Use the button above to create one."
+    },
+    "buttons": { "generate_now": "Generate Now" },
+    "labels": { "pdf_viewer": "AI Dialogue Viewer" }
+  },
+
+  "pedagogica_nota_title": "Pedagogical Note",
+  "pedagogica_nota_text": "Dialogues are generated based on the \"Master Prompt\". If results are not as expected, you can regenerate the version to get variations in avatar attitudes.",
+  "idempotente_text_part1": "This dialogue version is",
+  "idempotente_word": "idempotent",
+  "idempotente_text_part2": "When saving a new version, the previous file will be replaced to maintain scenario integrity."
+
 }

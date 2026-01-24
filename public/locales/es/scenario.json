@@ -41,16 +41,7 @@
 
     "duplicate_title": "Título Duplicado",
     "duplicate_text": "Ya existe un escenario con este título en tu sistema. Por favor, elige un nombre diferente.",
-    "save_error_text": "Hubo un error al intentar guardar el archivo en el servidor.",
-
-    "generating_dialogue_title": "Generando Diálogo",
-    "ia_analyzing": "GlorIA está analizando...",
-    "connecting_ia": "Conectando con el servidor...",
-    "ia_drafting": "Diseñando el guion pedagógico...",
-    "wait_message": "Este proceso suele tardar de 20 a 40 segundos.",
-    "generation_diaolgue_success_title": "¡Diálogo Creado!",
-    "generation_diaolgue_success_text": "Los diálogos y respuestas de los avatares se han actualizado correctamente."
-    
+    "save_error_text": "Hubo un error al intentar guardar el archivo en el servidor."    
   },
 
   "preview": {
@@ -112,13 +103,6 @@
     }
   },
 
-  "dialogs_lab": {
-    "id_scenario": "ID del Escenario",
-    "test_dialogs_title": "Laboratorio de Diálogos",
-    "btn_regenerate": "Testear otra versión",
-    "btn_download": "Descargar Oficial"
-  },
-
   "common": {
     "back": "Regresar",
     "next": "Siguiente"
@@ -172,13 +156,5 @@
       "description": "Al procesar los datos, crearé las tablas de comportamientos, activadores y planes de recuperación siguiendo los lineamientos pedagógicos de la UNAB.",
       "footer": "Formato PDF Oficial"
     }
-  },
-
-  
-  "pedagogica_nota_title": "Nota Pedagógica",
-  "pedagogica_nota_text": "Los diálogos son generados basándose en el \"Prompt Maestro\". Si los resultados no son los esperados, puedes regenerar la versión para obtener variaciones en la actitud de los avatares.",
-  "idempotente_text_part1": "Esta versión de diálogos es",
-  "idempotente_word": "idempotente",
-  "idempotente_text_part2": "Al guardar una nueva versión, el archivo anterior será reemplazado para mantener la integridad del escenario."
-
+  }
 }

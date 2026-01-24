@@ -113,12 +113,7 @@
     }
   },
 
-  "dialogs_lab": {
-    "id_scenario": "Scenario ID",
-    "test_dialogs_title": "Dialogue Laboratory",
-    "btn_regenerate": "Test Another Version",
-    "btn_download": "Download Official"
-  },
+  
   
   "common": {
     "back": "Back",
@@ -173,12 +168,6 @@
       "description": "By processing the data, I will create behavior tables, triggers, and recovery plans following UNAB pedagogical guidelines.",
       "footer": "Official PDF Format"
     }
-  },
-
-  "pedagogica_nota_title": "Pedagogical Note",
-  "pedagogica_nota_text": "Dialogues are generated based on the \"Master Prompt\". If results are not as expected, you can regenerate the version to get variations in avatar attitudes.",
-  "idempotente_text_part1": "This dialogue version is",
-  "idempotente_word": "idempotent",
-  "idempotente_text_part2": "When saving a new version, the previous file will be replaced to maintain scenario integrity."
-
+  }
+  
 }
