@@ -24,7 +24,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'https://mursionassistantunab-api.onrender.com',
+        target: 'https://gloria-manager-simulation.onrender.com',
         //target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false,

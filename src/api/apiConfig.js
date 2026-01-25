@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://mursionassistantunab-api.onrender.com', 
+  baseURL: 'https://gloria-manager-simulation.onrender.com', 
   //baseURL: 'http://localhost:8080',
   headers: {
     'Content-Type': 'application/json',

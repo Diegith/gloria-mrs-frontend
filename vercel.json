@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://mursionassistantunab-api.onrender.com/:path*"
+      "destination": "https://gloria-manager-simulation.onrender.com/:path*"
     },
     {
       "source": "/(.*)",
